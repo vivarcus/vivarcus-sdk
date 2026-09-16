@@ -9,7 +9,7 @@ Record Action with **OnPreExecute** confirm dialog and **OnPostExecute** result 
 ## Build
 
 ```bash
-ov-sdk build ./examples/03-confirm-dialog -o action.wasm
+vivarcus-sdk build ./examples/03-confirm-dialog -o action.wasm
 ```
 
 ## Deploy

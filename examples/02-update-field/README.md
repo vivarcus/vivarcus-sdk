@@ -9,7 +9,7 @@ Record Action that writes `title__c` via `SetValue` and `platform.Update`.
 ## Build
 
 ```bash
-ov-sdk build ./examples/02-update-field -o action.wasm
+vivarcus-sdk build ./examples/02-update-field -o action.wasm
 ```
 
 ## Manifest

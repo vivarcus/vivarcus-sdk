@@ -1,6 +1,6 @@
 # 排错
 
-## ov-sdk build 失败
+## vivarcus-sdk build 失败
 
 | 现象 | 处理 |
 |------|------|
@@ -11,13 +11,13 @@
 | `imports forbidden package` | 移除 `os`/`net` 等禁止包 |
 | `module exceeds 2MB` | 精简代码或依赖 |
 
-## ov package validate 失败
+## vivarcus package validate 失败
 
 | issue | 处理 |
 |-------|------|
 | `gosdk_invalid` + checksum | 重新计算 `sha256sum action.wasm`，更新 manifest |
 | `gosdk_invalid` + api_version | 使用 `"api_version": "1"` |
-| `gosdk_invalid` + import / whitelist | wasm 含非法 import；勿手写 wasm，用 `ov-sdk build` |
+| `gosdk_invalid` + import / whitelist | wasm 含非法 import；勿手写 wasm，用 `vivarcus-sdk build` |
 
 ```bash
 sha256sum gosdk/action.wasm

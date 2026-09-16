@@ -8,7 +8,7 @@
 |----|-----|
 | Vault | 你的 Sandbox 或生产 Vault，Vault Owner |
 | 对象 | `demo_request__c`（见下方 MDL） |
-| 工具 | Go、TinyGo、`ov-sdk`、`ov` CLI |
+| 工具 | Go、TinyGo、`vivarcus-sdk`、`vivarcus` CLI |
 
 ## Step 1 — 创建对象（MDL）
 
@@ -18,13 +18,13 @@
 - `{{OBJECT_LABEL}}` → `Demo Request`
 
 ```bash
-ov mdl run templates/mdl/01-object.mdl
+vivarcus mdl run templates/mdl/01-object.mdl
 ```
 
 ## Step 2 — 构建 wasm
 
 ```bash
-ov-sdk build ./examples/02-update-field -o ./action.wasm
+vivarcus-sdk build ./examples/02-update-field -o ./action.wasm
 ```
 
 编辑 `action.sdk_manifest.json`：
@@ -45,9 +45,9 @@ ov-sdk build ./examples/02-update-field -o ./action.wasm
 ## Step 4 — 部署
 
 ```bash
-ov package import ./examples/99-full-stack/dist/demo-action.vpk
-ov package validate <package_id>
-ov package deploy <package_id> --confirm
+vivarcus package import ./examples/99-full-stack/dist/demo-action.vpk
+vivarcus package validate <package_id>
+vivarcus package deploy <package_id> --confirm
 ```
 
 ## Step 5 — 激活
@@ -58,7 +58,7 @@ ov package deploy <package_id> --confirm
 - `{{OBJECT_ACTION}}` → `demo_request__c.set_title__c`
 
 ```bash
-ov mdl run templates/mdl/03-recordaction-active.mdl
+vivarcus mdl run templates/mdl/03-recordaction-active.mdl
 ```
 
 ## Step 6 — 验证

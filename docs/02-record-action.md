@@ -38,7 +38,7 @@ type RecordAction interface {
 
 ## 可选方法
 
-实现以下方法时，`ov-sdk build` 会自动导出对应 wasm 钩子：
+实现以下方法时，`vivarcus-sdk build` 会自动导出对应 wasm 钩子：
 
 ```go
 // 执行前确认对话框（仅 UserAction）
@@ -74,6 +74,6 @@ rec.SetValue("title__c", "new value")
 
 - 包 `com.acme.actions`，类型 `Approve` → `com.acme.actions.Approve`
 
-`ov-sdk build` 在 manifest 中生成默认值，部署前请改为正式 FQN。
+`vivarcus-sdk build` 在 manifest 中生成默认值，部署前请改为正式 FQN。
 
 下一步：[03-build](03-build.md)

@@ -6,7 +6,7 @@ Action 绑定的对象须已存在。先执行 MDL：
 
 ```bash
 # 编辑 templates/mdl/01-object.mdl 中的 {{OBJECT}} 等占位符
-ov mdl run templates/mdl/01-object.mdl
+vivarcus mdl run templates/mdl/01-object.mdl
 ```
 
 若 Action 用于生命周期状态页，还需 [06-lifecycle](06-lifecycle.md)。
@@ -15,15 +15,15 @@ ov mdl run templates/mdl/01-object.mdl
 
 ```bash
 # 1. 导入
-ov package import ./my-action.vpk
+vivarcus package import ./my-action.vpk
 # 返回 package_id
 
 # 2. 校验
-ov package validate <package_id> --json
+vivarcus package validate <package_id> --json
 # 期望 deployment_status 非 not_verified__v
 
 # 3. 部署（非 TTY 须 --confirm）
-ov package deploy <package_id> --confirm --json
+vivarcus package deploy <package_id> --confirm --json
 # 期望 deployment_status 为 deployed__v
 ```
 
@@ -39,7 +39,7 @@ ov package deploy <package_id> --confirm --json
 
 ```bash
 # 编辑 templates/mdl/03-recordaction-active.mdl
-ov mdl run templates/mdl/03-recordaction-active.mdl
+vivarcus mdl run templates/mdl/03-recordaction-active.mdl
 ```
 
 或手动 MDL：

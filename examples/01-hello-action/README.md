@@ -1,15 +1,15 @@
 # 01-hello-action
 
-Minimal Record Action — validates `ov-sdk` scan, codegen, and wasm compile.
+Minimal Record Action — validates `vivarcus-sdk` scan, codegen, and wasm compile.
 
 ## Build
 
 ```bash
 # scan + codegen only (no tinygo)
-ov-sdk build ./examples/01-hello-action --skip-compile
+vivarcus-sdk build ./examples/01-hello-action --skip-compile
 
 # full wasm (requires tinygo)
-ov-sdk build ./examples/01-hello-action -o action.wasm
+vivarcus-sdk build ./examples/01-hello-action -o action.wasm
 ```
 
 ## What it does

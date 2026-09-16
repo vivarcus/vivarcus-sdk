@@ -27,7 +27,7 @@ my-action.vpk (zip)
 
 ## sdk_manifest.json
 
-由 `ov-sdk build` 生成，或从 [templates/vpk/sdk_manifest.json.tpl](../templates/vpk/sdk_manifest.json.tpl) 填写：
+由 `vivarcus-sdk build` 生成，或从 [templates/vpk/sdk_manifest.json.tpl](../templates/vpk/sdk_manifest.json.tpl) 填写：
 
 ```json
 {
@@ -64,7 +64,7 @@ cd dist && zip -r ../my-action.vpk vaultpackage.xml gosdk/
 
 ## validate 阶段校验
 
-平台在 `ov package validate` 时检查：
+平台在 `vivarcus package validate` 时检查：
 
 - `api_version` 是否支持
 - `sha256` 与 wasm 是否匹配

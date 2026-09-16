@@ -12,8 +12,8 @@
 |------|------|
 | [Go](https://go.dev/dl/) 1.22+ | 编写 Action |
 | [TinyGo](https://tinygo.org/getting-started/) | 编译 wasm |
-| [ov-sdk](docs/03-build.md) | 扫描、codegen、打包 manifest |
-| [ov CLI](docs/01-prerequisites.md) | 部署 VPK 到 Vault |
+| [vivarcus-sdk](docs/03-build.md) | 扫描、codegen、打包 manifest |
+| [vivarcus CLI](docs/01-prerequisites.md) | 部署 VPK 到 Vault |
 
 ```bash
 git clone https://github.com/vivarcus/vivarcus-sdk.git
@@ -41,7 +41,7 @@ cp templates/action/main.go.tpl my-action/main.go
 ### 3. 构建 wasm
 
 ```bash
-ov-sdk build ./my-action -o action.wasm
+vivarcus-sdk build ./my-action -o action.wasm
 # 产出 action.wasm 与 action.sdk_manifest.json
 ```
 
@@ -51,7 +51,7 @@ ov-sdk build ./my-action -o action.wasm
 
 ```bash
 # 见 templates/mdl/README.md
-ov mdl run templates/mdl/01-object.mdl
+vivarcus mdl run templates/mdl/01-object.mdl
 ```
 
 ### 5. 打包并部署 VPK
@@ -59,15 +59,15 @@ ov mdl run templates/mdl/01-object.mdl
 ```bash
 cd examples/99-full-stack
 ./scripts/package-vpk.sh ../02-update-field/action.wasm ../02-update-field/action.sdk_manifest.json
-ov package import ./dist/my-action.vpk
-ov package validate <package_id>
-ov package deploy <package_id> --confirm
+vivarcus package import ./dist/my-action.vpk
+vivarcus package validate <package_id>
+vivarcus package deploy <package_id> --confirm
 ```
 
 ### 6. 激活
 
 ```bash
-ov mdl run templates/mdl/03-recordaction-active.mdl
+vivarcus mdl run templates/mdl/03-recordaction-active.mdl
 ```
 
 打开记录详情 → **All Actions** → 点击按钮验证。
@@ -78,7 +78,7 @@ ov mdl run templates/mdl/03-recordaction-active.mdl
 |------|------|
 | [01-prerequisites](docs/01-prerequisites.md) | 环境、权限、CLI 配置 |
 | [02-record-action](docs/02-record-action.md) | API：Meta、Execute、可选钩子 |
-| [03-build](docs/03-build.md) | `ov-sdk build`、manifest 字段 |
+| [03-build](docs/03-build.md) | `vivarcus-sdk build`、manifest 字段 |
 | [04-package-vpk](docs/04-package-vpk.md) | VPK 目录结构与 `vaultpackage.xml` |
 | [05-deploy](docs/05-deploy.md) | import → validate → deploy → 激活 |
 | [06-lifecycle](docs/06-lifecycle.md) | 生命周期按钮与 MDL |

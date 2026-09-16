@@ -10,9 +10,9 @@
 | 4 | [03-recordaction-active.mdl](03-recordaction-active.mdl) | 激活 Recordaction / Objectaction |
 
 ```bash
-ov mdl run templates/mdl/01-object.mdl
+vivarcus mdl run templates/mdl/01-object.mdl
 # deploy VPK ...
-ov mdl run templates/mdl/03-recordaction-active.mdl
+vivarcus mdl run templates/mdl/03-recordaction-active.mdl
 ```
 
 占位符须与 `sdk_manifest.json` 及 Go `Meta()` 一致。

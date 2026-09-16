@@ -3,7 +3,7 @@
 ## 命令
 
 ```bash
-ov-sdk build <module-dir> [-o action.wasm] [--skip-compile]
+vivarcus-sdk build <module-dir> [-o action.wasm] [--skip-compile]
 ```
 
 | 标志 | 说明 |
@@ -49,8 +49,8 @@ my-action/
 ## 本地验证（无需 Vault）
 
 ```bash
-ov-sdk build ./examples/01-hello-action --skip-compile   # 验证扫描/codegen
-ov-sdk build ./examples/01-hello-action -o /tmp/action.wasm # 完整编译
+vivarcus-sdk build ./examples/01-hello-action --skip-compile   # 验证扫描/codegen
+vivarcus-sdk build ./examples/01-hello-action -o /tmp/action.wasm # 完整编译
 sha256sum /tmp/action.wasm
 ```
 

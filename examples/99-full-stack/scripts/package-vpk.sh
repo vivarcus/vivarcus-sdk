@@ -5,7 +5,7 @@
 #   ./scripts/package-vpk.sh <action.wasm> <sdk_manifest.json> [output.vpk]
 #
 # Example:
-#   ov-sdk build ../02-update-field -o action.wasm
+#   vivarcus-sdk build ../02-update-field -o action.wasm
 #   ./scripts/package-vpk.sh ./action.wasm ./action.sdk_manifest.json
 set -euo pipefail
 

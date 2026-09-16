@@ -4,7 +4,7 @@ import (
 	"github.com/vivarcus/vivarcus-sdk/action"
 )
 
-// NoopAction is a minimal UserAction used as the ov-sdk example.
+// NoopAction is a minimal UserAction used as the vivarcus-sdk example.
 type NoopAction struct{}
 
 func (NoopAction) Meta() action.Meta {
