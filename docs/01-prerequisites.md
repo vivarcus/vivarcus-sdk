@@ -33,11 +33,21 @@ curl -fsSL https://raw.githubusercontent.com/vivarcus/vivarcus-sdk/main/scripts/
 
 若暂无 Release，请联系 Vivarcus 支持获取对应版本的构建工具。
 
+## 安装 ov CLI
+
+从 [vivarcus/vivarcus-cli Releases](https://github.com/vivarcus/vivarcus-cli/releases) 下载与 Vault 版本匹配的 `ov` 二进制，或使用安装脚本：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vivarcus/vivarcus-cli/main/scripts/install-ov.sh | bash
+```
+
+将 `ov` 放入 `PATH`（例如 `~/.local/bin`）。
+
 ## 配置 ov CLI
 
 ```bash
-ov auth login --vault https://<your-vault>.vivarcus.com
-ov config set vault <vault_id>
+ov auth login --endpoint https://<your-vault>.vivarcus.com
+ov config set default_vault <vault_id>
 ```
 
 ## Vault 权限
