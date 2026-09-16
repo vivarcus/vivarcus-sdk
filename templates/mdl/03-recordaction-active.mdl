@@ -1,0 +1,2 @@
+ALTER Recordaction {{ACTION_FQN}} SET active(true);
+ALTER Objectaction {{OBJECT_ACTION}} SET active(true);

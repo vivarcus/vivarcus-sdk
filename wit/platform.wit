@@ -1,0 +1,25 @@
+;; CAP-SDK Phase 1 IDL (WIT). Wire codec is length-prefixed JSON over core-module ABI.
+;; Component Model / wit-bindgen host binding is Phase 2.
+
+package vivarcus:platform@0.1.0;
+
+interface log {
+  /// level: debug|info|warn|error
+  log: func(level: string, message: string);
+}
+
+interface record {
+  /// Returns length-prefixed JSON Wire Record body; err non-zero on failure.
+  get: func(object: string, record-id: string) -> result<list<u8>, u32>;
+  /// fields is length-prefixed JSON object of field name -> typed Field.
+  update: func(object: string, record-id: string, fields: list<u8>) -> result<_, u32>;
+  /// Optional; host returns err=1 when unimplemented.
+  create: func(object: string, fields: list<u8>) -> result<string, u32>;
+  /// Optional; host returns err=1 when unimplemented.
+  delete: func(object: string, record-id: string) -> result<_, u32>;
+}
+
+world host {
+  export log;
+  export record;
+}

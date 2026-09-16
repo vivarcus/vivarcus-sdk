@@ -1,0 +1,15 @@
+;; Guest reactor exports for Record Action (core-module Phase 1).
+
+package vivarcus:sdk@0.1.0;
+
+world record-action {
+  /// Returns length-prefixed JSON Meta.
+  export __sdk-describe: func() -> list<u8>;
+  /// ctx is length-prefixed JSON Context; returns 1 if executable.
+  export is-executable: func(ctx: list<u8>) -> u32;
+  /// ctx is length-prefixed JSON Context; returns length-prefixed ExecuteResult.
+  export execute: func(ctx: list<u8>) -> list<u8>;
+  /// Optional USER_ACTION UI hooks (generated only when the entry type implements them).
+  export on-pre-execute: func(ctx: list<u8>) -> list<u8>;
+  export on-post-execute: func(ctx: list<u8>) -> list<u8>;
+}

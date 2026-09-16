@@ -1,0 +1,21 @@
+CREATE Object {{OBJECT}} (
+  label('{{OBJECT_LABEL}}'),
+  label_plural('{{OBJECT_LABEL_PLURAL}}'),
+  active(true),
+  in_menu(true),
+  audit(false),
+  Field title__c (
+    type('String'),
+    label('Title'),
+    required(false),
+    list_column(true),
+    active(true)
+  ),
+  Field status__c (
+    type('String'),
+    label('Status'),
+    required(false),
+    list_column(true),
+    active(true)
+  )
+);

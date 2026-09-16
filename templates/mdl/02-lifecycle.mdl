@@ -1,0 +1,16 @@
+CREATE Lifecycle {{LIFECYCLE}} (
+  label('{{LIFECYCLE_LABEL}}'),
+  object('{{OBJECT}}'),
+  State draft__c (
+    label('Draft'),
+    active(true)
+  ),
+  State in_review__c (
+    label('In Review'),
+    active(true)
+  ),
+  State approved__c (
+    label('Approved'),
+    active(true)
+  )
+);
