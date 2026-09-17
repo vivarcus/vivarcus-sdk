@@ -1,0 +1,15 @@
+-- 片段：entry_action rule 里引用 Recordaction.<FQN>。
+-- 将 {{ACTION_FQN}} 换成 `vivarcus-sdk describe` 输出的 component_name（如 com.example.StampOnEnter）。
+-- 在 Vault 生命周期配置中，把下面 rule 挂到目标状态的 Entry Action 上
+-- （例如 demo_request_lc__c 进入 in_review__c 时触发）。
+--
+-- rule XML（嵌入 entry_action 配置）：
+-- <?xml version="1.0" encoding="UTF-8"?>
+-- <rule>
+--   <actions>
+--     <action type="Recordaction.{{ACTION_FQN}}"/>
+--   </actions>
+-- </rule>
+--
+-- 若还要状态页按钮，改用 Objectaction 间接引用（见 docs/06-lifecycle.md）：
+-- <action type="Objectaction.{{OBJECT}}.{{OBJECT_ACTION_SUFFIX}}"/>

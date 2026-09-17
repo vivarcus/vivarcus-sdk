@@ -1,21 +1,27 @@
 # 02-update-field
 
-Record Action that writes `title__c` via `SetValue` and `platform.Update`.
+记录页 **All Actions** 按钮：通过 `SetValue` + `platform.Update` 写入 `title__c`。
 
-## Prerequisites
+## Quick start
 
-- Object with field `title__c` (default example uses `sdk_demo__c`; full-stack uses `demo_request__c`)
+```bash
+vivarcus auth login && vivarcus config set default_vault <uuid>
+./scripts/dev-demo.sh
+```
 
-## Build
+组件定义在 [`mdl/`](mdl/) 与 [main.go](main.go) 的 `Meta()`。脚本：build → combo VPK → API 验证。
+
+## Build only
 
 ```bash
 vivarcus-sdk build ./examples/02-update-field -o action.wasm
 ```
 
-## Manifest
+## 手工跟做
 
-After build, edit `action.sdk_manifest.json` so `object` / `object_action` / `component_name` match your Vault MDL.
+| 步骤 | 位置 |
+|------|------|
+| 创建对象 | VPK `components/00010/`（[mdl/01-object.mdl](mdl/01-object.mdl)） |
+| 打 VPK + deploy | [_shared/scripts/package-vpk.sh](../_shared/scripts/package-vpk.sh) |
 
-## Deploy
-
-See [99-full-stack](../99-full-stack) or [docs/05-deploy.md](../../docs/05-deploy.md).
+部署细节：[docs/05-deploy.md](../../docs/05-deploy.md)。端到端索引：[99-full-stack](../99-full-stack)。系统路径见 [04-lifecycle-entry](../04-lifecycle-entry)。

@@ -1,0 +1,14 @@
+CREATE Object IF NOT EXISTS demo_request__c (
+  label('Demo Request'),
+  label_plural('Demo Requests'),
+  active(true),
+  in_menu(true),
+  audit(false),
+  Field title__c (
+    type('String'),
+    label('Title'),
+    required(false),
+    list_column(true),
+    active(true)
+  )
+);

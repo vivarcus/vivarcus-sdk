@@ -1,0 +1,14 @@
+-- 片段：Workflow Cancelation Action rule 里引用 Recordaction.<FQN>。
+-- 将 {{ACTION_FQN}} 换成 `vivarcus-sdk describe` 输出的 component_name。
+--
+-- 在 Objectworkflow 的 Cancelation Actions 配置中粘贴：
+--
+-- <?xml version="1.0" encoding="UTF-8"?>
+-- <rule>
+--   <actions>
+--     <action type="Recordaction.{{ACTION_FQN}}"/>
+--   </actions>
+-- </rule>
+--
+-- Meta.Usages 须含 WorkflowCancel（见 examples/04-lifecycle-entry/main.go）。
+-- 验证：取消进行中的 workflow 实例后，目标记录字段应被改写。

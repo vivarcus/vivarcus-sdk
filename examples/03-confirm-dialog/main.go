@@ -10,8 +10,9 @@ type ConfirmDialog struct{}
 
 func (ConfirmDialog) Meta() action.Meta {
 	return action.Meta{
-		Label:  "Confirm Update",
-		Object: "sdk_demo__c",
+		Label:         "Confirm Update",
+		Object:        "sdk_demo__c",
+		ObjectAction:  "confirm_update__c",
 		Usages: []action.Usage{action.UsageUserAction},
 		RunAs:  action.RunAsSystemUser,
 	}

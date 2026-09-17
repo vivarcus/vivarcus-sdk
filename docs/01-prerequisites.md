@@ -7,7 +7,7 @@
 | Go | 1.22+ | 编写 Action 源码 |
 | TinyGo | 0.33+（建议最新稳定版） | 编译 wasm |
 | Go（TinyGo 兼容） | TinyGo 当前支持 Go 1.19–1.26 | 本机 Go 过新时 `vivarcus-sdk build` 会失败，见 [troubleshooting](troubleshooting.md) |
-| vivarcus-sdk | 与 Vault 版本对齐 | 扫描、codegen、`sdk_manifest.json` |
+| vivarcus-sdk | 与 Vault 版本对齐 | 扫描、codegen、编译 wasm |
 | vivarcus CLI | 与目标 Vault 版本对齐 | MDL、VPK 部署 |
 
 ## 安装 TinyGo
@@ -56,7 +56,7 @@ vivarcus config set default_vault <vault_id>
 |------|----------|
 | 执行 MDL（CREATE Object 等） | Vault Owner 或等效 metadata 权限 |
 | `vivarcus package import/validate/deploy` | `configuration.deployment` |
-| `ALTER Recordaction ... active(true)` | metadata 编辑权限 |
+| `ALTER Recordaction ... (active(true))` | metadata 编辑权限 |
 
 ## 验证环境
 

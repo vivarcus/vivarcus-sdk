@@ -1,20 +1,39 @@
 # 打包 VPK
 
-客户 Record Action 通过 **Inbound VPK** 的 `gosdk/` 步骤部署。
+客户 Record Action 通过 **Inbound VPK** 部署。结构：**可选 `components/` MDL 步** + 末尾 **`gosdk/`**（一份或多份 `.wasm`）。
 
 ## 目录结构
+
+纯 gosdk：
 
 ```text
 my-action.vpk (zip)
 ├── vaultpackage.xml
 └── gosdk/
-    ├── sdk_manifest.json
     └── action.wasm
 ```
 
-## vaultpackage.xml
+**Combo VPK**（对象 MDL 与 Action 同包）：
 
-复制 [templates/vpk/vaultpackage.xml.tpl](../templates/vpk/vaultpackage.xml.tpl)，替换占位符：
+```text
+demo-action.vpk (zip)
+├── vaultpackage.xml
+├── components/
+│   └── 00010/
+│       ├── Object.sdk_demo__c.mdl
+│       └── Object.sdk_demo__c.md5
+└── gosdk/
+    └── action.wasm
+```
+
+平台 deploy 顺序：按 step 编号执行所有 `components/<step>/` MDL，**最后**执行 `gosdk/`：
+
+- 扫描 `gosdk/*.wasm`
+- 实例化并调用 `__sdk_describe`，得到 Action 列表
+- 每个 Action 创建 active `Recordaction`（及 `Meta.ObjectAction` 对应的 Objectaction）
+- 同一 wasm 的多条 Recordaction 共享同一个 blob
+
+## vaultpackage.xml
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -25,51 +44,23 @@ my-action.vpk (zip)
 </VaultPackage>
 ```
 
-## sdk_manifest.json
-
-由 `vivarcus-sdk build` 生成，或从 [templates/vpk/sdk_manifest.json.tpl](../templates/vpk/sdk_manifest.json.tpl) 填写：
-
-```json
-{
-  "api_version": "1",
-  "component_name": "com.acme.actions.Approve",
-  "label": "Approve",
-  "object": "demo_request__c",
-  "object_action": "demo_request__c.approve__c",
-  "usages": ["UserAction"],
-  "wasm_file": "action.wasm",
-  "sha256": "<与 action.wasm 一致的 SHA-256 hex>"
-}
-```
-
-**关键对齐规则：**
-
-- `sha256` 必须与 `gosdk/action.wasm` 字节完全一致
-- `object` 须为 Vault 中已存在的对象 api_name
-- `object_action` 通常为 `<object>.<verb>__c` 格式
-
 ## 打包命令
 
-手动：
-
 ```bash
-mkdir -p dist/gosdk
-cp action.wasm action.sdk_manifest.json dist/gosdk/
-cp sdk_manifest.json dist/gosdk/   # 或重命名 action.sdk_manifest.json
-cp vaultpackage.xml dist/
-cd dist && zip -r ../my-action.vpk vaultpackage.xml gosdk/
+mkdir -p dist/components/00010 dist/gosdk
+cp rendered/01-object.mdl dist/components/00010/Object.demo_request__c.mdl
+md5sum dist/components/00010/Object.demo_request__c.mdl | awk '{print $1" Object.demo_request__c"}' \
+  > dist/components/00010/Object.demo_request__c.md5
+cp action.wasm dist/gosdk/
+cd dist && zip -r ../my-action.vpk vaultpackage.xml components/ gosdk/
 ```
 
-或使用脚本：[examples/99-full-stack/scripts/package-vpk.sh](../examples/99-full-stack/scripts/package-vpk.sh)
+或示例脚本：
 
-## validate 阶段校验
-
-平台在 `vivarcus package validate` 时检查：
-
-- `api_version` 是否支持
-- `sha256` 与 wasm 是否匹配
-- wasm import 是否在白名单内（禁止私自 import 网络/文件系统等）
+```bash
+./_shared/scripts/package-vpk.sh \
+  --component 10:Object:sdk_demo__c:./rendered/01-object.mdl \
+  ./action.wasm ./demo-action.vpk
+```
 
 失败时 `deployment_status` 为 `not_verified__v`，issues 含 `gosdk_invalid`。
-
-下一步：[05-deploy](05-deploy.md)

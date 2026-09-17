@@ -1,10 +1,16 @@
 # 03-confirm-dialog
 
-Record Action with **OnPreExecute** confirm dialog and **OnPostExecute** result banner.
+带 **OnPreExecute** 确认框与 **OnPostExecute** 成功横幅的 Record Action。
 
-## Prerequisites
+## Quick start
 
-- Object `sdk_demo__c` with field `title__c` (see `templates/mdl/01-object.mdl`)
+```bash
+vivarcus auth login && vivarcus config set default_vault <uuid>
+./scripts/dev-demo.sh
+```
+
+- 组件 MDL：[`mdl/`](mdl/)（对象随 VPK `components/` 部署）
+- 脚本验证 Execute 改写字段；**确认框 / 横幅须 UI 手测**
 
 ## Build
 
@@ -12,17 +18,11 @@ Record Action with **OnPreExecute** confirm dialog and **OnPostExecute** result 
 vivarcus-sdk build ./examples/03-confirm-dialog -o action.wasm
 ```
 
-## Deploy
-
-See [docs/05-deploy.md](../../docs/05-deploy.md). Set manifest:
-
-- `component_name`: e.g. `com.example.ConfirmDialog`
-- `object`: `sdk_demo__c`
-- `object_action`: `sdk_demo__c.confirm_update__c`
+按钮 api_name 在 `Meta.ObjectAction`（`confirm_update__c`）。
 
 ## Expected UI
 
-1. Click **Confirm Update** in All Actions
-2. Confirm dialog appears
-3. After confirm, `title__c` becomes `confirmed-by-sdk`
-4. Success banner: "Title updated successfully."
+1. All Actions → **Confirm Update**
+2. 确认对话框
+3. `title__c` → `confirmed-by-sdk`
+4. 成功横幅："Title updated successfully."

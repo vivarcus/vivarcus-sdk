@@ -20,7 +20,8 @@ var CreateRecordFunc func(object string, fieldsJSON []byte) (id string, errCode 
 // DeleteRecordFunc is wired by the reactor when the host implements delete.
 var DeleteRecordFunc func(object, recordID string) int32
 
-// Get loads one record via the host (Java RecordService / QueryService subset).
+// Get loads the current Action context record via the host.
+// object and recordID must match the executing record (customer wasm sandbox).
 func Get(object, recordID string) (action.Record, error) {
 	if GetRecordFunc == nil {
 		return action.Record{}, fmt.Errorf("record_action_host_call_failed: get unavailable")
@@ -44,7 +45,8 @@ func Get(object, recordID string) (action.Record, error) {
 	return action.NewRecord(rec.ID, rec.Object, rec.Fields), nil
 }
 
-// Update writes fields on a record via the host (Java RecordService.batchSaveRecords).
+// Update writes fields on the current Action context record via the host.
+// object and recordID must match the executing record.
 func Update(object, recordID string, fields map[string]any) error {
 	if UpdateRecordFunc == nil {
 		return fmt.Errorf("record_action_host_call_failed: update unavailable")

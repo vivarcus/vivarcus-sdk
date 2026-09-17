@@ -26,10 +26,12 @@
 
 ## Phase 1 宿主能力
 
+客户 Record Action 跑在 **wasm 沙箱**里，不是 Veeva Java SDK 的 Vault Owner 服务账号。`platform.Get` / `platform.Update` 的 `object` 与 `recordID` **必须等于**当前 Action 上下文记录；传入其他 ID 返回 `record_action_host_call_failed`。改当前记录请用 `rec.SetValue` 或对上下文 ID 调用 `platform.Update`。
+
 | 能力 | 状态 |
 |------|------|
-| `platform.Get` | 支持 |
-| `platform.Update` | 支持 |
+| `platform.Get` | 仅当前上下文记录 |
+| `platform.Update` | 仅当前上下文记录；未知字段 / 保留键拒绝；单次字段数与单值体积有上限 |
 | `platform.LogInfo` 等 | 支持 |
 | `platform.Create` / `Delete` | 视宿主实现，可能 NOT_IMPLEMENTED |
 | VQL 查询 | **不支持** |
@@ -45,8 +47,8 @@
 ## 部署
 
 - `javasdk/` VPK → `not_supported__v`
-- 客户 Action 部署后默认 **inactive**
-- 须管理员 `ALTER active(true)` 后 UI 可见
+- 客户 Action 部署后默认 **active**
+- 管理员可用 `ALTER active(false)` 停用
 
 ## Record Trigger
 

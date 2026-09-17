@@ -1,0 +1,21 @@
+-- 片段：Workflow Action 步骤的 step_detail（Perform actions rule）。
+-- 将 {{ACTION_FQN}} 换成 `vivarcus-sdk describe` 输出的 component_name。
+--
+-- step_detail XML（嵌入 Objectworkflowstep type=action 的配置）：
+--
+-- <?xml version="1.0" encoding="UTF-8"?>
+-- <vwf:stepdetails xmlns:vwf="VeevaVault">
+--   <vwf:rules>
+--     <vwf:rule>
+--       <actions>
+--         <action type="Recordaction.{{ACTION_FQN}}"/>
+--       </actions>
+--     </vwf:rule>
+--   </vwf:rules>
+-- </vwf:stepdetails>
+--
+-- 最小 workflow 结构（管理员配置/UI 路径因环境而异）：
+--   1. Objectworkflow 绑定 demo_request_lc__c，cardinality=One，auto_start 按需
+--   2. start 步 → action 步（粘贴上方 step_detail）→ end 步
+--   3. Recordaction {{ACTION_FQN}} 已 active；Meta.Usages 含 WorkflowStep
+--   4. 用 user action「Start Workflow」或 auto_start 启动，跑完 action 步后检查字段

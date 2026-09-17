@@ -4,10 +4,10 @@
 
 | 现象 | 处理 |
 |------|------|
-| `requires go version 1.19 through 1.26, got go1.27` | 本机 Go 版本过新，TinyGo 暂不支持。降级 Go 或仅用 `--skip-compile` 验证扫描/codegen |
+| `requires go version 1.19 through 1.26, got go1.27` | 本机 Go 版本过新，TinyGo 暂不支持。用 `GOTOOLCHAIN=go1.26.2 vivarcus-sdk build ...`，或降级 Go；仅验证扫描/codegen 时加 `--skip-compile` |
 | `tinygo not found` | 安装 TinyGo 并加入 `PATH` |
-| `no Record Action entry type found` | 确保有且仅有一个类型实现 `Meta`/`IsExecutable`/`Execute` |
-| `multiple entry types` | 一个模块只能有一个入口类型 |
+| `no Record Action entry type found` | 至少一个类型实现 `Meta`/`IsExecutable`/`Execute` |
+| `entry types must share one package` | 同一 module 的多个 Action 须在同一 Go package |
 | `imports forbidden package` | 移除 `os`/`net` 等禁止包 |
 | `module exceeds 2MB` | 精简代码或依赖 |
 
@@ -15,18 +15,18 @@
 
 | issue | 处理 |
 |-------|------|
-| `gosdk_invalid` + checksum | 重新计算 `sha256sum action.wasm`，更新 manifest |
-| `gosdk_invalid` + api_version | 使用 `"api_version": "1"` |
+| `gosdk_invalid` + 2mb / size | wasm ≤ 2 MB；重新 `vivarcus-sdk build` |
+| `gosdk_invalid` + api_version | `__sdk_describe` 须返回 `api_version`=`1` |
 | `gosdk_invalid` + import / whitelist | wasm 含非法 import；勿手写 wasm，用 `vivarcus-sdk build` |
+| `gosdk_invalid` + describe / missing | wasm 须导出 `__sdk_describe` 且列出至少一条 Action |
 
 ```bash
 sha256sum gosdk/action.wasm
-# 将 hex 填入 sdk_manifest.json 的 sha256 字段
 ```
 
 ## 部署成功但按钮不出现
 
-1. 确认 `ALTER Recordaction ... active(true)` 已执行
+1. 确认 `ALTER Recordaction ... (active(true))` 已执行
 2. 确认对应 `Objectaction` 也已 `active(true)`
 3. 确认 `Meta.Object` 与当前记录对象一致
 4. 确认 `IsExecutable` 返回 `true`

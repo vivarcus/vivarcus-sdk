@@ -35,8 +35,12 @@ const (
 
 // Meta declares component-level static metadata (Java @RecordActionInfo).
 type Meta struct {
+	// Name is the Recordaction FQN. Empty → toolchain derives from module + type.
+	Name string
 	Label               string
 	Object              string
+	// ObjectAction is the Objectaction api_name (e.g. set_title__c). Empty → no button.
+	ObjectAction        string
 	Usages              []Usage
 	Icon                string
 	UserInputObject     string
@@ -80,6 +84,7 @@ func SupportsUsage(usages []Usage, want Usage) bool {
 
 // RecordActionContext is the runtime context for Record Action execution.
 type RecordActionContext struct {
+	Action             string
 	Records            []Record
 	UserInputRecord    *Record
 	Configuration      map[string]string
@@ -248,8 +253,10 @@ func ToWireMeta(m Meta) wire.Meta {
 		runAs = string(RunAsSystemUser)
 	}
 	return wire.Meta{
+		ComponentName:       strings.TrimSpace(m.Name),
 		Label:               m.Label,
 		Object:              m.Object,
+		ObjectAction:        strings.TrimSpace(m.ObjectAction),
 		Usages:              usages,
 		Icon:                m.Icon,
 		UserInputObject:     m.UserInputObject,
@@ -273,6 +280,7 @@ func ContextFromWire(w wire.Context, host FieldWriter) RecordActionContext {
 		userIn = &r
 	}
 	return RecordActionContext{
+		Action:             w.Action,
 		Records:            recs,
 		UserInputRecord:    userIn,
 		Configuration:      w.Configuration,

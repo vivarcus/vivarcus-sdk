@@ -1,12 +1,15 @@
-# 部署与激活
+# 部署
 
 ## 前置：对象与字段
 
-Action 绑定的对象须已存在。先执行 MDL：
+Action 绑定的对象须已存在。两种方式：
+
+1. **Combo VPK**（推荐，见 [04-package-vpk](04-package-vpk.md)）：对象 MDL 放在 `components/00010/`，与 `gosdk/` 同包 import/deploy。
+2. **先 apply-mdl**：单独执行对象 MDL，再打纯 `gosdk/` VPK（生命周期、workflow 等复杂配置仍常用此方式）。
 
 ```bash
-# 编辑 templates/mdl/01-object.mdl 中的 {{OBJECT}} 等占位符
-vivarcus mdl run templates/mdl/01-object.mdl
+# 方式 2 示例
+vivarcus component apply-mdl --confirm -f templates/mdl/01-object.mdl
 ```
 
 若 Action 用于生命周期状态页，还需 [06-lifecycle](06-lifecycle.md)。
@@ -27,27 +30,13 @@ vivarcus package deploy <package_id> --confirm --json
 # 期望 deployment_status 为 deployed__v
 ```
 
+Combo VPK deploy 时：先应用 `components/` 内 MDL（如创建对象），再安装 gosdk（创建 **active** Recordaction）。
+
 部署成功后：
 
 - wasm 写入 blob store
-- 创建 **inactive** 的 `Recordaction` 与 `Objectaction`
+- 创建 **active** 的 `Recordaction` 与 `Objectaction`（`Meta.ObjectAction` 非空时）
 - `source_code` 格式为 `<blob_id>@<sha256hex>`
-
-## 激活
-
-客户组件默认 **inactive**，须管理员激活后按钮才出现：
-
-```bash
-# 编辑 templates/mdl/03-recordaction-active.mdl
-vivarcus mdl run templates/mdl/03-recordaction-active.mdl
-```
-
-或手动 MDL：
-
-```mdl
-ALTER Recordaction com.acme.actions.Approve SET active(true);
-ALTER Objectaction demo_request__c.approve__c SET active(true);
-```
 
 ## 验证
 
@@ -59,7 +48,7 @@ ALTER Objectaction demo_request__c.approve__c SET active(true);
 ## 停用
 
 ```mdl
-ALTER Recordaction com.acme.actions.Approve SET active(false);
+ALTER Recordaction com.acme.actions.Approve (active(false));
 ```
 
 按钮随即从菜单消失；正在执行的实例不受影响。

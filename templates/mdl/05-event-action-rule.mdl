@@ -1,0 +1,15 @@
+-- 片段：event_action rule 里引用 Recordaction.<FQN>。
+-- 将 {{ACTION_FQN}} 换成 `vivarcus-sdk describe` 输出的 component_name（如 com.example.StampOnEnter）。
+--
+-- 在 Vault 生命周期配置 → Event Actions 中：
+--   event = create_record（或其它平台事件名）
+--   rule XML 如下（也可改用 Objectaction 间接引用，见 docs/06-lifecycle.md）
+--
+-- <?xml version="1.0" encoding="UTF-8"?>
+-- <rule>
+--   <actions>
+--     <action type="Recordaction.{{ACTION_FQN}}"/>
+--   </actions>
+-- </rule>
+--
+-- 验证：创建 demo_request__c 记录后，Action 应自动执行（无需用户点按钮）。

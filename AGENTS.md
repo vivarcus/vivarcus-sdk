@@ -6,8 +6,8 @@
 
 - **目标**：帮助开发者在 Vivarcus Vault 上实现 **Record Action**（记录页自定义按钮）。
 - **语言**：Go → TinyGo → WebAssembly（**不是 Java**）。
-- **部署路径**：`gosdk/` Inbound VPK → `vivarcus package import/validate/deploy` → MDL `ALTER ... active(true)`。
-- **默认状态**：客户 Action 部署后 **inactive**，须管理员激活才在 UI 出现。
+- **部署路径**：`gosdk/` Inbound VPK → `vivarcus package import/validate/deploy`。
+- **默认状态**：客户 Action 部署后 **active**，记录页按钮 deploy 完成即可见。
 
 ## 任务路由
 
@@ -16,30 +16,31 @@
 | 新建 Record Action | `templates/action/main.go.tpl` | 实现接口 → `vivarcus-sdk build` |
 | 按钮改字段 | `examples/02-update-field/` | 对齐 `Meta.Object` 与 MDL 对象 api_name |
 | 执行前确认框 | `examples/03-confirm-dialog/` | 实现 `OnPreExecute` |
-| 生命周期按钮 | `docs/06-lifecycle.md` + `templates/mdl/02-lifecycle.mdl` | `Usages` 含 `LifecycleUserAction` |
+| 记录页按钮（端到端） | `examples/99-full-stack/` | MDL + VPK + deploy |
+| **系统自动执行（entry/event/workflow/cancel）** | **`examples/04-lifecycle-entry/`** | 同一 wasm；Step 3–7 分路径绑 rule + 验证 |
+| 生命周期概念与两种挂法 | `docs/06-lifecycle.md` | 对照表 + 链到 04 示例 |
 | 创建对象 | `templates/mdl/01-object.mdl` | `vivarcus mdl run`（需 Vault Owner） |
-| 打包 VPK | `templates/vpk/` + `examples/99-full-stack/scripts/package-vpk.sh` | 填 manifest `sha256` |
+| 打包 VPK | `docs/04-package-vpk.md` | `gosdk/*.wasm` + 可选 `components/` |
 | 部署到 Vault | `docs/05-deploy.md` | `vivarcus package import/validate/deploy --confirm` |
-| 激活 Action | `templates/mdl/03-recordaction-active.mdl` | 替换 `{{ACTION_FQN}}` 等占位符 |
-| validate 失败 | `docs/troubleshooting.md` | 查 checksum / api_version / wasm import |
+| validate 失败 | `docs/troubleshooting.md` | 查 wasm import / describe `api_version` / 体积 |
 
 ## 端到端检查清单
 
 完成一个 Record Action 时，按顺序确认：
 
 1. **对象存在**：`templates/mdl/01-object.mdl` 中 `{{OBJECT}}` 已创建，字段 api_name 与 Go 代码一致。
-2. **Action 代码**：唯一入口类型实现 `Meta()`、`IsExecutable()`、`Execute()`；可选 `OnPreExecute`/`OnPostExecute`。
-3. **Meta 对齐**：`Meta.Object`、`Meta.Label` 与 `sdk_manifest.json` 的 `object`、`label`、`component_name` 一致。
-4. **构建**：`vivarcus-sdk build <dir> -o action.wasm` 成功；`action.sdk_manifest.json` 含正确 `sha256`。
+2. **Action 代码**：实现 `Meta()`、`IsExecutable()`、`Execute()`；同一 module 可有多个类型；可选 `OnPreExecute`/`OnPostExecute`。
+3. **Meta 对齐**：`Meta.Object` / `Meta.ObjectAction` / `Meta.Label` 与 Vault 对象和按钮 api_name 一致；FQN 由 module+类型名派生（或 `Meta.Name`）。
+4. **构建**：`vivarcus-sdk build <dir> -o action.wasm` 成功。
 5. **VPK 结构**：
    ```
    vaultpackage.xml
-   gosdk/sdk_manifest.json
    gosdk/action.wasm
    ```
-6. **部署**：`vivarcus package validate` 通过（`deployment_status` 非 `not_verified__v`）。
-7. **激活**：`ALTER Recordaction <FQN> SET active(true)` 及对应 `Objectaction`。
-8. **验证**：记录详情 **All Actions** 可见按钮；点击后字段/横幅符合预期。
+6. **部署**：`vivarcus package validate` 通过（`deployment_status` 非 `not_verified__v`），`deploy --confirm` 创建 active Recordaction / Objectaction。
+7. **验证**：
+   - 按钮：记录详情 **All Actions**
+   - 系统路径：见 [04-lifecycle-entry](examples/04-lifecycle-entry)（entry / event / workflow / cancel 分步）
 
 ## 占位符约定
 
@@ -48,12 +49,12 @@
 | 占位符 | 含义 | 示例 |
 |--------|------|------|
 | `{{OBJECT}}` | 自定义对象 api_name | `demo_request__c` |
-| `{{ACTION_FQN}}` | Recordaction 全限定名 | `com.acme.actions.Approve` |
+| `{{ACTION_FQN}}` | Recordaction 名 | `com.example.SetTitle`（`vivarcus-sdk describe`） |
 | `{{OBJECT_ACTION}}` | Objectaction api_name | `demo_request__c.approve__c` |
 | `{{LABEL}}` | 按钮显示名 | `Approve Request` |
 | `{{SHA256}}` | wasm 文件 SHA-256 hex | 由 `sha256sum action.wasm` 得到 |
 
-`component_name`（FQN）默认由 `vivarcus-sdk build` 生成（`com.example.<TypeName>`），部署前通常改为正式包名。
+`component_name`（FQN）默认由 module 路径 + 类型名派生；需要固定名字时在 `Meta.Name` 显式写出。
 
 ## 禁止事项
 
@@ -89,9 +90,10 @@ rec.SetValue(field, value) // Execute 内暂存，配合 platform.Update 持久�
 | 目录 | 场景 |
 |------|------|
 | `examples/01-hello-action` | 工具链冒烟 |
-| `examples/02-update-field` | 读写记录字段 |
+| `examples/02-update-field` | 读写记录字段（UserAction 按钮） |
 | `examples/03-confirm-dialog` | 确认框 + 结果横幅 |
-| `examples/99-full-stack` | MDL + VPK 脚本一条龙 |
+| `examples/04-lifecycle-entry` | entry / event / workflow step / cancel（Step 4–8 + MDL 模板 04–07） |
+| `examples/99-full-stack` | MDL + VPK 脚本一条龙（按钮） |
 
 ## 反馈
 

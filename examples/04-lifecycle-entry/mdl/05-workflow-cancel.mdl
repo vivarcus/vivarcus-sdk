@@ -1,0 +1,41 @@
+CREATE Objectworkflow IF NOT EXISTS stamp_on_enter_wf_cancel__c (
+  label('Stamp On Enter WF Cancel'),
+  active(true),
+  object_lifecycles('Objectlifecycle.demo_request_lc__c'),
+  auto_start(false),
+  cardinality('One'),
+  workflow_content_type('Object'),
+  cancellation_comment(false),
+  WorkflowCancelationAction cancel_stamp__c(
+    order(1),
+    rule({<?xml version="1.0" encoding="UTF-8"?>
+<rule><actions><action type="Recordaction.{{ACTION_FQN}}"/></actions></rule>})
+  ),
+  Objectworkflowstep start__c(
+    label('Start'),
+    type('start'),
+    next_steps('usertask__c'),
+    step_detail({<?xml version="1.0"?><vwf:stepdetails xmlns:vwf="VeevaVault"/>})
+  ),
+  Objectworkflowstep usertask__c(
+    label('Review'),
+    type('usertask'),
+    next_steps('end__c'),
+    step_detail({<?xml version="1.0" encoding="UTF-8"?>
+<vwf:stepdetails xmlns:vwf="VeevaVault">
+  <vwf:dialog type="task"><vwf:label>Review</vwf:label>
+    <vwf:controls>
+      <vwf:control name="verdict_public_key__c" type="verdict">
+        <vwf:verdict label="Approve" name="verdict_approve__c"/>
+      </vwf:control>
+    </vwf:controls>
+  </vwf:dialog>
+  <vwf:assignment participant="workflow_initiator__v" excludeowner="false"/>
+</vwf:stepdetails>})
+  ),
+  Objectworkflowstep end__c(
+    label('End'),
+    type('end'),
+    step_detail({<?xml version="1.0"?><vwf:stepdetails xmlns:vwf="VeevaVault"><vwf:endType type="end"/></vwf:stepdetails>})
+  )
+);

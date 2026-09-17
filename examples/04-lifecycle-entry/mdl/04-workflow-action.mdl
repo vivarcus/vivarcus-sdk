@@ -1,0 +1,35 @@
+CREATE Objectworkflow IF NOT EXISTS stamp_on_enter_wf__c (
+  label('Stamp On Enter WF'),
+  active(true),
+  object_lifecycles('Objectlifecycle.demo_request_lc__c'),
+  auto_start(false),
+  cardinality('One'),
+  workflow_content_type('Object'),
+  cancellation_comment(false),
+  Objectworkflowstep start__c(
+    label('Start'),
+    type('start'),
+    next_steps('stamp__c'),
+    step_detail({<?xml version="1.0"?><vwf:stepdetails xmlns:vwf="VeevaVault"/>})
+  ),
+  Objectworkflowstep stamp__c(
+    label('Stamp'),
+    type('action'),
+    next_steps('end__c'),
+    step_detail({<?xml version="1.0" encoding="UTF-8"?>
+<vwf:stepdetails xmlns:vwf="VeevaVault">
+  <vwf:rules>
+    <vwf:rule>
+      <actions>
+        <action type="Recordaction.{{ACTION_FQN}}"/>
+      </actions>
+    </vwf:rule>
+  </vwf:rules>
+</vwf:stepdetails>})
+  ),
+  Objectworkflowstep end__c(
+    label('End'),
+    type('end'),
+    step_detail({<?xml version="1.0"?><vwf:stepdetails xmlns:vwf="VeevaVault"><vwf:endType type="end"/></vwf:stepdetails>})
+  )
+);

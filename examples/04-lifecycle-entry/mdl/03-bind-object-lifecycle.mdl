@@ -1,0 +1,3 @@
+ALTER Object demo_request__c (
+  available_lifecycles('demo_request_lc__c')
+);

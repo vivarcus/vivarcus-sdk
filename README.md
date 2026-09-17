@@ -1,6 +1,6 @@
 # Vivarcus SDK
 
-在 Vivarcus Vault 上开发 **Record Action**（记录页自定义按钮）的 Go 开发套件。代码编译为 WebAssembly，通过 Inbound VPK 部署，管理员激活后在记录详情 **All Actions** 中可见。
+在 Vivarcus Vault 上开发 **Record Action**（记录页自定义按钮）的 Go 开发套件。代码编译为 WebAssembly，通过 Inbound VPK 部署，deploy 后在记录详情 **All Actions** 中可见。
 
 > 对标 Veeva Vault Java SDK 的 `RecordAction`；Phase 1 使用 **Go + wasm**，`javasdk/` 暂不支持。
 
@@ -12,7 +12,7 @@
 |------|------|
 | [Go](https://go.dev/dl/) 1.22+ | 编写 Action |
 | [TinyGo](https://tinygo.org/getting-started/) | 编译 wasm |
-| [vivarcus-sdk](docs/03-build.md) | 扫描、codegen、打包 manifest |
+| [vivarcus-sdk](docs/03-build.md) | 扫描、codegen、编译 wasm |
 | [vivarcus CLI](docs/01-prerequisites.md) | 部署 VPK 到 Vault |
 
 ```bash
@@ -34,15 +34,16 @@ cp templates/action/main.go.tpl my-action/main.go
 | 示例 | 路径 | 说明 |
 |------|------|------|
 | Hello Action | [examples/01-hello-action](examples/01-hello-action) | 最小空操作 |
-| 更新字段 | [examples/02-update-field](examples/02-update-field) | `SetValue` + `platform.Update` |
+| 更新字段 | [examples/02-update-field](examples/02-update-field) | 记录页按钮：`SetValue` + `platform.Update` |
 | 确认对话框 | [examples/03-confirm-dialog](examples/03-confirm-dialog) | `OnPreExecute` / `OnPostExecute` |
-| 端到端 | [examples/99-full-stack](examples/99-full-stack) | MDL + 构建 + VPK + 部署脚本 |
+| **系统自动执行** | [examples/04-lifecycle-entry](examples/04-lifecycle-entry) | entry / event / workflow / cancel 分步跟做 |
+| 端到端（**多 Action**） | [examples/99-full-stack](examples/99-full-stack) | 同一 module、一份 wasm、一个 combo VPK |
 
 ### 3. 构建 wasm
 
 ```bash
 vivarcus-sdk build ./my-action -o action.wasm
-# 产出 action.wasm 与 action.sdk_manifest.json
+vivarcus-sdk describe action.wasm   # Recordaction 名由 go.mod + 类型名派生
 ```
 
 ### 4. 准备 Vault 元数据（MDL）
@@ -58,17 +59,12 @@ vivarcus mdl run templates/mdl/01-object.mdl
 
 ```bash
 cd examples/99-full-stack
-./scripts/package-vpk.sh ../02-update-field/action.wasm ../02-update-field/action.sdk_manifest.json
-vivarcus package import ./dist/my-action.vpk
-vivarcus package validate <package_id>
-vivarcus package deploy <package_id> --confirm
+./scripts/dev-demo.sh
 ```
 
-### 6. 激活
+或手工：`vivarcus-sdk build . -o /tmp/action.wasm` 后 `_shared/scripts/package-vpk.sh …`（一份 wasm，可含多个 Action）。
 
-```bash
-vivarcus mdl run templates/mdl/03-recordaction-active.mdl
-```
+### 6. 验证
 
 打开记录详情 → **All Actions** → 点击按钮验证。
 
@@ -80,8 +76,8 @@ vivarcus mdl run templates/mdl/03-recordaction-active.mdl
 | [02-record-action](docs/02-record-action.md) | API：Meta、Execute、可选钩子 |
 | [03-build](docs/03-build.md) | `vivarcus-sdk build`、manifest 字段 |
 | [04-package-vpk](docs/04-package-vpk.md) | VPK 目录结构与 `vaultpackage.xml` |
-| [05-deploy](docs/05-deploy.md) | import → validate → deploy → 激活 |
-| [06-lifecycle](docs/06-lifecycle.md) | 生命周期按钮与 MDL |
+| [05-deploy](docs/05-deploy.md) | import → validate → deploy |
+| [06-lifecycle](docs/06-lifecycle.md) | entry / workflow / 按钮：Usages 与两种 rule 挂法 |
 | [07-limits](docs/07-limits.md) | 标准库边界、配额、Phase 1 能力 |
 | [troubleshooting](docs/troubleshooting.md) | 常见错误 |
 

@@ -4,6 +4,7 @@
 
 ```bash
 vivarcus-sdk build <module-dir> [-o action.wasm] [--skip-compile]
+vivarcus-sdk describe action.wasm
 ```
 
 | 标志 | 说明 |
@@ -12,13 +13,15 @@ vivarcus-sdk build <module-dir> [-o action.wasm] [--skip-compile]
 | `--skip-compile` | 仅扫描 + codegen reactor，不调用 tinygo |
 | `--compiler tinygo` | 默认；Phase 1 仅支持 tinygo |
 
+`describe` 打印 `__sdk_describe`：每条 Action 的 `component_name`（Recordaction 名）、label、object、object_action。名称由 `go.mod` 模块路径 + Go 类型名派生；需要固定名字时在 `Meta.Name` 写出。
+
 ## 构建流程
 
 1. **扫描** — 拒绝 `os`、`net` 等禁止 import
-2. **发现入口** — 模块内唯一实现 `Meta`/`IsExecutable`/`Execute` 的类型
+2. **发现入口** — 模块内所有实现 `Meta`/`IsExecutable`/`Execute` 的类型（可多个）
 3. **Codegen** — 生成 `zz_generated_reactor.go`（勿手改）
 4. **编译** — `tinygo build -target=wasi` 产出 wasm
-5. **Manifest** — 写入 `action.sdk_manifest.json`（含 `sha256`、`exports`）
+5. **Describe** — 本地校验 `__sdk_describe` 列出的 Action（FQN / label / usages）
 
 ## 产出物
 
@@ -26,37 +29,16 @@ vivarcus-sdk build <module-dir> [-o action.wasm] [--skip-compile]
 my-action/
 ├── main.go
 ├── zz_generated_reactor.go   # 自动生成
-├── action.wasm               # 部署用
-└── action.sdk_manifest.json  # 放入 VPK gosdk/
+└── action.wasm               # 放入 VPK gosdk/
 ```
 
-## manifest 字段
+一个 module 可以包含多个 Action 类型；它们编译进 **同一份** wasm。导入时平台扫描 wasm，以 describe 为真源，不再需要 `sdk_manifest.json`。
 
-| 字段 | 说明 |
-|------|------|
-| `api_version` | 固定 `"1"` |
-| `component_name` | Recordaction FQN |
-| `label` | 按钮名称 |
-| `object` | 对象 api_name |
-| `object_action` | Objectaction api_name（通常 `<object>.<action>__c`） |
-| `usages` | 如 `["UserAction"]` |
-| `wasm_file` | wasm 文件名 |
-| `sha256` | wasm 文件 SHA-256 十六进制 |
-| `exports` | wasm 导出列表（校验用） |
-
-部署前请核对 `component_name`、`object`、`object_action` 与 Vault MDL 一致。
-
-## 本地验证（无需 Vault）
-
-```bash
-vivarcus-sdk build ./examples/01-hello-action --skip-compile   # 验证扫描/codegen
-vivarcus-sdk build ./examples/01-hello-action -o /tmp/action.wasm # 完整编译
-sha256sum /tmp/action.wasm
-```
+`Meta.ObjectAction` 非空时，部署会同时创建 active 的 Objectaction（记录页按钮）。
 
 ## 限制
 
 - wasm 体积 ≤ **2 MB**
-- 单模块仅 **一个** 入口类型
+- 入口类型须在同一 Go package
 
 下一步：[04-package-vpk](04-package-vpk.md)

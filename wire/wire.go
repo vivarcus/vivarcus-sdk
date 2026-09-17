@@ -11,6 +11,7 @@ import (
 
 // Context is the Record Action context crossing the host/guest boundary.
 type Context struct {
+	Action             string            `json:"action,omitempty"`
 	Records            []Record          `json:"records"`
 	UserInputRecord    *Record           `json:"user_input_record,omitempty"`
 	Configuration      map[string]string `json:"configuration,omitempty"`
@@ -41,15 +42,23 @@ type Field struct {
 	T    string  `json:"t,omitempty"` // RFC3339
 }
 
-// Meta is the serialized Record Action metadata from __sdk_describe.
+// Meta is one Record Action's metadata inside a Describe payload.
 type Meta struct {
+	ComponentName       string   `json:"component_name,omitempty"`
 	Label               string   `json:"label"`
 	Object              string   `json:"object,omitempty"`
+	ObjectAction        string   `json:"object_action,omitempty"`
 	Usages              []string `json:"usages,omitempty"`
 	Icon                string   `json:"icon,omitempty"`
 	UserInputObject     string   `json:"user_input_object,omitempty"`
 	UserInputObjectType string   `json:"user_input_object_type,omitempty"`
 	RunAs               string   `json:"run_as,omitempty"`
+}
+
+// Describe is the payload returned by __sdk_describe (one wasm, many actions).
+type Describe struct {
+	APIVersion string `json:"api_version"`
+	Actions    []Meta `json:"actions"`
 }
 
 // ExecuteResult is returned from guest execute.

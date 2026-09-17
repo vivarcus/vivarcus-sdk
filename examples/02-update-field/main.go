@@ -10,8 +10,9 @@ type SetTitle struct{}
 
 func (SetTitle) Meta() action.Meta {
 	return action.Meta{
-		Label:  "Set Title",
-		Object: "sdk_demo__c",
+		Label:         "Set Title",
+		Object:        "sdk_demo__c",
+		ObjectAction:  "set_title__c",
 		Usages: []action.Usage{action.UsageUserAction},
 		RunAs:  action.RunAsSystemUser,
 	}
