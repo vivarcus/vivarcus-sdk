@@ -57,6 +57,9 @@ in_require = False
 seen_sdk = False
 for line in lines:
     stripped = line.strip()
+    if stripped.startswith("go "):
+        out.append("go 1.22.12")
+        continue
     if stripped == "require (":
         in_require = True
         out.append(line)
@@ -69,8 +72,7 @@ for line in lines:
         continue
     if stripped.startswith("require "):
         fields = stripped.split()
-        if len(fields) >= 3 and fields[1] in sdk_modules:
-            out.append(f"require {fields[1]} {pseudo}")
+            out.append(f"require {mod} {pseudo}")
             seen_sdk = True
             continue
     if in_require:
@@ -224,13 +226,14 @@ while IFS= read -r -d '' file; do
   rel="${file#"$MODULE_DIR"/}"
   case "$rel" in
     action.wasm|*.wasm) continue ;;
+    dist/*) continue ;;
   esac
   case "$(basename "$rel")" in
     zz_generated_reactor.go) continue ;;
   esac
   mkdir -p "$DIST/gosdk/$(dirname "$rel")"
   cp "$file" "$DIST/gosdk/$rel"
-done < <(find "$MODULE_DIR" -type f \( -name '*.go' -o -name 'go.mod' -o -name 'go.sum' \) -print0)
+done < <(find "$MODULE_DIR" -type f \( -name '*.go' -o -name 'go.mod' -o -name 'go.sum' \) ! -path '*/dist/*' -print0)
 
 # VPK gosdk/ must not ship monorepo replace directives (ADR-21 validate).
 if [ -f "$DIST/gosdk/go.mod" ]; then

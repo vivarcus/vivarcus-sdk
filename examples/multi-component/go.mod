@@ -1,6 +1,6 @@
 module github.com/acme.corp.sdkdemo
 
-go 1.26.2
+go 1.22.12
 
 require github.com/vivarcus/vivarcus-sdk v0.0.0
 

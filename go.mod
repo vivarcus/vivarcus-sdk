@@ -1,3 +1,3 @@
 module github.com/vivarcus/vivarcus-sdk
 
-go 1.22
+go 1.22.12
