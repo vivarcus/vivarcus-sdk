@@ -25,13 +25,14 @@ cd vivarcus-sdk
 从 **[examples/multi-component](examples/multi-component)** 开始——一个 module、多个 Action + Trigger、一个 combo VPK：
 
 ```bash
-vivarcus auth login && vivarcus config set default_vault <uuid>
-# Agent / CI：复用 VIVARCUS_TOKEN，勿每条命令前重新 login（密码登录 4 次/分钟/IP+用户）
 cd examples/multi-component
-./scripts/dev-demo.sh
+GOTOOLCHAIN=go1.22.12 vivarcus-sdk build . -o action.wasm
+bash ../_shared/scripts/package-vpk.sh . action.vpk \
+  --component 10:Object:sdk_demo__c:mdl/01-object.mdl
+# vivarcus package import → validate → deploy（见 docs/05-deploy.md）
 ```
 
-涵盖 `go.mod` + `shared/` 布局、对象 MDL、VPK 打包、`import` → `validate` → `deploy`、脚本自动验收。
+涵盖 `go.mod` + `shared/` 布局、对象 MDL、VPK 打包、`import` → `validate` → `deploy`。
 
 ### 3. 写 Action
 

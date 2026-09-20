@@ -1,4 +1,4 @@
-module github.com/acme.corp.sdkdemo
+module github.com/acme.corp.queryfield
 
 go 1.22.12
 

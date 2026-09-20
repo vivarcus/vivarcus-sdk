@@ -1,6 +1,6 @@
 # 04-lifecycle-entry 演示 MDL
 
-按 **Step 1–7** 顺序放置可执行的 Vault 组件 MDL。对象 / lifecycle / workflow 名写在这些文件里；只有 `{{ACTION_FQN}}` 由 `vivarcus-sdk describe` 在跑 demo 时填入。
+按 **Step 1–7** 顺序放置可执行的 Vault 组件 MDL。对象 / lifecycle / workflow 名写在这些文件里；只有 `{{ACTION_FQN}}` 由 `vivarcus-sdk describe` 填入。
 
 | 文件 | 对应 README | 内容 |
 |------|-------------|------|
@@ -10,9 +10,10 @@
 | [04-workflow-action.mdl](04-workflow-action.mdl) | Step 5 | Action 步 workflow（`Recordaction.{{ACTION_FQN}}`） |
 | [05-workflow-cancel.mdl](05-workflow-cancel.mdl) | Step 7 | 带 usertask + Cancelation Action 的 workflow |
 
-手工应用（需先 `scripts/render-mdl.py mdl/01-object.mdl` 或 export 占位符）：
+手工应用（需先用 `render-mdl.py` 展开占位符）：
 
 ```bash
+python3 ../_shared/scripts/render-mdl.py mdl/01-object.mdl /tmp/rendered.mdl
 vivarcus component apply-mdl --confirm -f /tmp/rendered.mdl
 ```
 

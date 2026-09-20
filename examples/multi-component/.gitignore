@@ -1,5 +1,0 @@
-demo.env
-action.wasm
-action.sdk_manifest.json
-**/zz_generated_reactor.go
-dist/

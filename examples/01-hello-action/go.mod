@@ -1,4 +1,4 @@
-module github.com/acme.corp.sdkdemo
+module github.com/acme.corp.hello
 
 go 1.22.12
 

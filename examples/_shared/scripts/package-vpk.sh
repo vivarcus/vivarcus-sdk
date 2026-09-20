@@ -16,8 +16,8 @@ set -euo pipefail
 guest_sdk_pseudo_version() {
   local repo_root="$1"
   local ts hash
-  ts="$(git -C "$repo_root" log -1 --format=%cd --date=format:%Y%m%d%H%M%S -- sdk/guest 2>/dev/null || date -u +%Y%m%d%H%M%S)"
-  hash="$(git -C "$repo_root" rev-parse --short=12 HEAD:sdk/guest 2>/dev/null || git -C "$repo_root" rev-parse --short=12 HEAD)"
+  ts="$(git -C "$repo_root" log -1 --format=%cd --date=format:%Y%m%d%H%M%S -- sdk 2>/dev/null || date -u +%Y%m%d%H%M%S)"
+  hash="$(git -C "$repo_root" rev-parse --short=12 HEAD:sdk 2>/dev/null || git -C "$repo_root" rev-parse --short=12 HEAD)"
   echo "v0.0.0-${ts}-${hash}"
 }
 
@@ -32,11 +32,12 @@ module_go_toolchain_env() {
   fi
 }
 
-# Rewrite require to a pseudo-version, run go mod tidy with monorepo replace, then
+# Rewrite require to a pseudo-version, run go mod tidy with a local SDK replace, then
 # strip replace again so the VPK matches the customer deploy path (ADR-21).
 prepare_gosdk_mod_for_vpk() {
   local gosdk_dir="$1"
   local repo_root="$2"
+  local module_root="${3:-$repo_root}"
   local mod="${gosdk_dir}/go.mod"
   if [ ! -f "$mod" ]; then
     return 0
@@ -93,7 +94,7 @@ PY
 
   {
     echo ""
-    echo "replace github.com/vivarcus/vivarcus-sdk => ${repo_root}"
+    echo "replace github.com/vivarcus/vivarcus-sdk => ${module_root}"
   } >> "$mod"
 
   (
@@ -236,7 +237,7 @@ while IFS= read -r -d '' file; do
   cp "$file" "$DIST/gosdk/$rel"
 done < <(find "$MODULE_DIR" -type f \( -name '*.go' -o -name 'go.mod' -o -name 'go.sum' \) ! -path '*/dist/*' -print0)
 
-# VPK gosdk/ must not ship monorepo replace directives (ADR-21 validate).
+# VPK gosdk/ must not ship replace directives (ADR-21 validate).
 if [ -f "$DIST/gosdk/go.mod" ]; then
   python3 - "$DIST/gosdk/go.mod" <<'PY'
 import re, sys
@@ -262,8 +263,31 @@ fi
 
 # Pin SDK require to a pseudo-version and emit go.sum (customer VPK path).
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || git rev-parse --show-toplevel)"
-prepare_gosdk_mod_for_vpk "$DIST/gosdk" "$REPO_ROOT"
+resolve_sdk_module_root() {
+  local dir="$1"
+  while [ "$dir" != "/" ]; do
+    if [ -f "$dir/go.mod" ] && grep -q '^module github.com/vivarcus/vivarcus-sdk' "$dir/go.mod" 2>/dev/null; then
+      echo "$dir"
+      return 0
+    fi
+    dir="$(dirname "$dir")"
+  done
+  if [ -n "${VIVARCUS_SDK_EXPORT:-}" ]; then
+    echo "$VIVARCUS_SDK_EXPORT"
+    return 0
+  fi
+  echo "resolve_sdk_module_root: github.com/vivarcus/vivarcus-sdk module root not found" >&2
+  return 1
+}
+REPO_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -z "$REPO_ROOT" ]; then
+  REPO_ROOT="${VIVARCUS_SDK_EXPORT:-}"
+fi
+SDK_MODULE_ROOT="$(resolve_sdk_module_root "$SCRIPT_DIR")"
+if [ -z "$REPO_ROOT" ]; then
+  REPO_ROOT="$SDK_MODULE_ROOT"
+fi
+prepare_gosdk_mod_for_vpk "$DIST/gosdk" "$REPO_ROOT" "$SDK_MODULE_ROOT"
 
 if ! find "$DIST/gosdk" -name '*.go' -print -quit | grep -q .; then
   echo "no .go files copied from $MODULE_DIR" >&2

@@ -1,4 +1,4 @@
-module github.com/acme.corp.sdkdemo
+module github.com/acme.corp.updatefield
 
 go 1.22.12
 
