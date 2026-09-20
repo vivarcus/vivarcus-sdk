@@ -28,6 +28,25 @@ module_go_toolchain_env() {
   fi
 }
 
+# Monorepo: sdk/go.mod ; export tree (ADR-24): go.mod at repo root.
+resolve_sdk_toolchain_go_mod() {
+  local repo_root="$1"
+  local mod=""
+  if [ -n "$repo_root" ] && [ -f "${repo_root}/sdk/go.mod" ]; then
+    mod="${repo_root}/sdk/go.mod"
+  elif [ -n "$repo_root" ] && [ -f "${repo_root}/go.mod" ] \
+    && grep -q '^module github.com/vivarcus/vivarcus-sdk' "${repo_root}/go.mod" 2>/dev/null; then
+    mod="${repo_root}/go.mod"
+  elif [ -n "${VIVARCUS_REPO_ROOT:-}" ] && [ -f "${VIVARCUS_REPO_ROOT}/sdk/go.mod" ]; then
+    mod="${VIVARCUS_REPO_ROOT}/sdk/go.mod"
+  fi
+  if [ -n "$mod" ]; then
+    echo "$mod"
+    return 0
+  fi
+  return 1
+}
+
 # Rewrite require to the Go module tag (dual-tag: v26.3.3-N from platform v26R3.3-N),
 # run go mod tidy with a local SDK replace, then strip replace for customer VPK (ADR-21).
 prepare_gosdk_mod_for_vpk() {
@@ -44,8 +63,11 @@ prepare_gosdk_mod_for_vpk() {
     echo "prepare_gosdk_mod_for_vpk: could not resolve github.com/vivarcus/vivarcus-sdk version (set VIVARCUS_PLATFORM_TAG or VIVARCUS_SDK_MODULE_REF)" >&2
     return 1
   fi
-  local gosdk_go
-  gosdk_go="$(sed -n 's/^go //p' "${repo_root}/sdk/go.mod" | head -1)"
+  local gosdk_go sdk_go_mod
+  gosdk_go=""
+  if sdk_go_mod="$(resolve_sdk_toolchain_go_mod "$repo_root")"; then
+    gosdk_go="$(sed -n 's/^go //p' "$sdk_go_mod" | head -1)"
+  fi
   [ -n "$gosdk_go" ] || gosdk_go="1.26.2"
 
   python3 - "$mod" "$sdk_version" "$gosdk_go" <<'PY'
@@ -144,9 +166,9 @@ populate_gosdk_sum_from_proxy() {
   [ -n "$resolved" ] || return 0
 
   helper="$(mktemp -d)"
-  local gosdk_go="1.26.2"
-  if [ -n "$repo_root" ] && [ -f "${repo_root}/sdk/go.mod" ]; then
-    gosdk_go="$(sed -n 's/^go //p' "${repo_root}/sdk/go.mod" | head -1)"
+  local gosdk_go="1.26.2" sdk_go_mod
+  if sdk_go_mod="$(resolve_sdk_toolchain_go_mod "$repo_root")"; then
+    gosdk_go="$(sed -n 's/^go //p' "$sdk_go_mod" | head -1)"
   fi
   cat > "${helper}/go.mod" <<EOF
 module example.com/vivarcus-sdk-sum
