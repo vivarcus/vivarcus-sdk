@@ -15,7 +15,8 @@ vivarcus auth login && vivarcus config set default_vault <uuid>
 ## Build
 
 ```bash
-vivarcus-sdk build ./examples/03-confirm-dialog -o action.wasm
+cd examples/03-confirm-dialog
+vivarcus-sdk build . -o action.wasm
 ```
 
 按钮 api_name 在 `Meta.ObjectAction`（`confirm_update__c`）。

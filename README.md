@@ -30,9 +30,7 @@ cd examples/multi-component
 ./scripts/dev-demo.sh
 ```
 
-或仓库内：`make -C sdk/examples demo-multi-component` / `make sdk-multi-component-demo`。
-
-涵盖 `go.mod` + `shared/` 布局、对象 MDL、VPK 打包、`import` → `validate` → `deploy`、API 自动验收。
+涵盖 `go.mod` + `shared/` 布局、对象 MDL、VPK 打包、`import` → `validate` → `deploy`、脚本自动验收。
 
 ### 3. 写 Action
 
@@ -96,6 +94,7 @@ vivarcus mdl run templates/mdl/01-object.mdl
 | 包 | 说明 |
 |----|------|
 | `action` | Record Action 接口与上下文 |
+| `trigger` | Record Trigger 接口与上下文 |
 | `platform` | 宿主能力：`Get` / `Update` / `Log` |
 | `wire` | ABI 编解码（一般由 codegen 使用） |
 

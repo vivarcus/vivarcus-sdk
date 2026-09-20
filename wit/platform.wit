@@ -19,7 +19,13 @@ interface record {
   delete: func(object: string, record-id: string) -> result<_, u32>;
 }
 
+interface query {
+  /// vql is UTF-8 VQL text. Returns length-prefixed JSON wire.QueryResult; err non-zero on failure.
+  execute: func(vql: string) -> result<list<u8>, u32>;
+}
+
 world host {
   export log;
   export record;
+  export query;
 }

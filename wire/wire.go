@@ -108,6 +108,13 @@ type UIResult struct {
 	Error          string `json:"error,omitempty"`
 }
 
+// QueryResult is the response from platform.Query (read-only VQL).
+type QueryResult struct {
+	Records []Record `json:"records"`
+	Total   int      `json:"total,omitempty"`
+	Size    int      `json:"size,omitempty"`
+}
+
 // Mutation is a staged field write from guest Execute/SetValue.
 type Mutation struct {
 	RecordID string `json:"record_id"`

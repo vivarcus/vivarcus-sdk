@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# Shared helpers for sdk/examples demos (_shared/scripts/dev-demo.sh).
+# Shared helpers for examples demos (_shared/scripts/dev-demo.sh).
 # Source after setting EXAMPLE_DIR, WORKDIR, VIVARCUS, VIVARCUS_SDK.
 
 SHARED_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

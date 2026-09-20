@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify sdk/examples demos (dispatched by DEMO_SCENARIO)."""
+"""Verify examples demos (dispatched by DEMO_SCENARIO)."""
 import os
 import sys
 

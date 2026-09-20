@@ -14,7 +14,8 @@ vivarcus auth login && vivarcus config set default_vault <uuid>
 ## Build only
 
 ```bash
-vivarcus-sdk build ./examples/02-update-field -o action.wasm
+cd examples/02-update-field
+vivarcus-sdk build . -o action.wasm
 ```
 
 ## 手工跟做

@@ -63,7 +63,7 @@
 - **不要** import `os`、`net`、`database/sql`、`unsafe` 等（编译期拒绝）。
 - **不要** 跳过 `validate` 直接 `deploy`。
 - **不要** 假设部署后按钮自动可见（须 `active(true)`）。
-- Phase 1 **无** VQL、通知、HTTP、生命周期切换 host API（见 `docs/07-limits.md`）。
+- Phase 1 支持 **只读 VQL**（`platform.Query`）；无通知、HTTP、生命周期切换 host API（见 `docs/07-limits.md`）。
 
 ## API 速查
 

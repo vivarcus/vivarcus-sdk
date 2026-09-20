@@ -4,7 +4,8 @@
 
 ```bash
 vivarcus auth login && vivarcus config set default_vault <uuid>
-make -C sdk/examples demo-multi-component
+cd examples/multi-component
+./scripts/dev-demo.sh
 ```
 
 | 路径 | 作用 |
@@ -14,7 +15,14 @@ make -C sdk/examples demo-multi-component
 | `action_*.go` / `trigger_*.go` | 分文件入口（同一 `package main`） |
 | [mdl/](mdl/) | 对象 + lifecycle entry_action MDL |
 
-`demo-multi-component` 会 API 验收：
+本地 build 校验：
+
+```bash
+cd examples/multi-component
+vivarcus-sdk build .
+```
+
+`dev-demo.sh` 会 API 验收：
 
 - CREATE 时 `StampName` Record Trigger 给 `name__v` 追加 `-trig`
 - 用户按钮 `set_title__c` / `clear_title__c`

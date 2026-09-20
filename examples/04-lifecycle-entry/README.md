@@ -20,32 +20,29 @@
 | Workflow 取消时跑 SDK | **本示例** | Step 7 |
 | 状态页按钮 + 系统自动跑 | 02 的代码 + `LifecycleUserAction`，Objectaction | Step 3 方式 B |
 
-## Quick start（本地 Dev Platform，一键跑通）
+## Quick start（目标 Vault，一键跑通）
 
-1. 在本地拉起 **Vivarcus Platform** 后端：`make dev-up` → `make serve` → `make build-sdk-wasm`
-2. 配置 CLI：
+1. 配置 CLI（指向你的 Vivarcus Vault）：
 
 ```bash
 vivarcus auth login
-vivarcus config set endpoint http://127.0.0.1:8080
-vivarcus config set default_vault <platform-vault-uuid>
+vivarcus config set default_vault <vault-uuid>
 ```
 
-3. 阅读 **MDL 组件**（`mdl/` 目录，与 Step 3–7 一一对应）：
+2. 阅读 **MDL 组件**（`mdl/` 目录，与 Step 3–7 一一对应）：
 
 ```bash
 cat mdl/README.md
 ```
 
-4. 一键预置 + 验证：
+3. 进入本示例目录，一键预置 + 验证：
 
 ```bash
+cd examples/04-lifecycle-entry
 ./scripts/dev-demo.sh           # lifecycle MDL + combo VPK（对象+gosdk）+ workflow MDL + 验证
 ./scripts/dev-demo.sh --setup-only
 ./scripts/dev-demo.sh --verify-only
 ```
-
-或仓库根目录：`make sdk-lifecycle-demo`。
 
 脚本**不包含**组件定义：对象 / lifecycle / workflow 写在 [`mdl/*.mdl`](mdl/) 中。Recordaction FQN 在 `vivarcus-sdk build` 之后由 `vivarcus-sdk describe action.wasm` 填入。
 
@@ -66,7 +63,7 @@ cat mdl/README.md
 ## Step 1 — 构建 wasm
 
 ```bash
-vivarcus-sdk build ./examples/04-lifecycle-entry -o action.wasm
+vivarcus-sdk build . -o action.wasm
 vivarcus-sdk describe action.wasm
 # component_name 即为 Recordaction 名，由 go.mod + 类型名派生
 ```

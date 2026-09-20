@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Unified entry for sdk/examples demos.
+# Unified entry for examples demos.
 #
 # Usage:
 #   ./_shared/scripts/dev-demo.sh <example-dir> [--setup-only|--verify-only]
-#   make -C sdk/examples demo-02-update-field
+#   make -C examples demo-02-update-field
 set -euo pipefail
 
 SHARED_DIR=$(cd "$(dirname "$0")" && pwd)

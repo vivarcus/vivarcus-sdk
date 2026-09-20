@@ -43,7 +43,7 @@ my-action/
 
 ## 工程化布局
 
-仓库示例 [multi-component](../examples/multi-component)（`make -C sdk/examples build-multi-component`）展示 ADR-21 推荐形态：
+仓库示例 [multi-component](../examples/multi-component)（`cd examples/multi-component && vivarcus-sdk build .`）展示 ADR-21 推荐形态：
 
 ```
 my-vault-sdk/
@@ -54,6 +54,6 @@ my-vault-sdk/
 └── action.wasm
 ```
 
-VPK `gosdk/` 只上传 `.go` + `go.mod`（**不要** `.wasm`；**不要** `replace`）。本地 monorepo 开发可临时 `replace` 指回平台 guest 模块。
+VPK `gosdk/` 只上传 `.go` + `go.mod`（**不要** `.wasm`；**不要** `replace`）。clone 本仓库做示例开发时，`go.mod` 可临时 `replace github.com/vivarcus/vivarcus-sdk => ../..`；打进 VPK 前须去掉。
 
 下一步：[04-package-vpk](04-package-vpk.md)

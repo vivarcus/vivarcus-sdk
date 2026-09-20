@@ -34,7 +34,7 @@
 | `platform.Update` | 仅当前上下文记录；未知字段 / 保留键拒绝；单次字段数与单值体积有上限 |
 | `platform.LogInfo` 等 | 支持 |
 | `platform.Create` / `Delete` | 视宿主实现，可能 NOT_IMPLEMENTED |
-| VQL 查询 | **不支持** |
+| `platform.Query`（只读 VQL） | 支持；`PAGESIZE` 上限 200；不支持 `PAGESIZE 0`（纯 count）、`PAGEOFFSET`、分页游标 |
 | 通知 | **不支持** |
 | HTTP 出站 | **不支持** |
 | 生命周期切换 / 工作流 | **不支持**（host API） |
