@@ -4,13 +4,7 @@ CREATE Object IF NOT EXISTS sdk_demo__c (
   active(true),
   in_menu(true),
   audit(false),
-  Field name__v (
-    type('String'),
-    label('Name'),
-    required(false),
-    list_column(true),
-    active(true)
-  ),
+  available_lifecycles('sdk_demo_lc__c'),
   Field title__c (
     type('String'),
     label('Title'),
