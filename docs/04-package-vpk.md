@@ -59,7 +59,9 @@ cp go.mod main.go dist/gosdk/
 cd dist && zip -r ../my-action.vpk vaultpackage.xml components/ gosdk/
 ```
 
-`package-vpk.sh` 会去掉 `replace`、把 SDK `require` 改成伪版本，并尽量写入 `go.sum`（checksum 来自已发布的 `github.com/vivarcus/vivarcus-sdk`；可用 `VIVARCUS_SDK_MODULE_REF=main` 覆盖）。**不要**使用裸 `v0.0.0`。
+`package-vpk.sh` 会去掉 `replace`、把 SDK `require` 写成 **Go module tag**（由平台 tag 映射，如 `v26R3.3-13316` → `v1.26.3-3.13316`），并尽量写入 `go.sum`。可用平台镜像 tag（如 `v26R3.3-13316`）或 Go module tag 通过 `VIVARCUS_SDK_MODULE_REF` 覆盖。**不要**使用裸 `v0.0.0`。
+
+平台 validate/deploy 时会把 `require` 里的 assembly 后缀与**当前 Vault 镜像**的 assembly 比对，并把 `go` 行与镜像内 `sdk/go.mod` 的 Go 版本（当前 `1.26.2`）比对；不一致则 `gosdk_invalid`（实际编译仍走镜像内 `/app/sdk/`）。
 
 或示例脚本：
 

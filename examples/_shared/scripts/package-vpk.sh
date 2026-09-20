@@ -13,13 +13,9 @@
 #   --summary <vaultpackage summary>
 set -euo pipefail
 
-guest_sdk_pseudo_version() {
-  local repo_root="$1"
-  local ts hash
-  ts="$(git -C "$repo_root" log -1 --format=%cd --date=format:%Y%m%d%H%M%S -- sdk 2>/dev/null || date -u +%Y%m%d%H%M%S)"
-  hash="$(git -C "$repo_root" rev-parse --short=12 HEAD:sdk 2>/dev/null || git -C "$repo_root" rev-parse --short=12 HEAD)"
-  echo "v0.0.0-${ts}-${hash}"
-}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=/dev/null
+. "${SCRIPT_DIR}/lib-sdk-module-version.sh"
 
 module_go_toolchain_env() {
   local mod="$1"
@@ -32,8 +28,8 @@ module_go_toolchain_env() {
   fi
 }
 
-# Rewrite require to a pseudo-version, run go mod tidy with a local SDK replace, then
-# strip replace again so the VPK matches the customer deploy path (ADR-21).
+# Rewrite require to the Go module tag (dual-tag: v26.3.3-N from platform v26R3.3-N),
+# run go mod tidy with a local SDK replace, then strip replace for customer VPK (ADR-21).
 prepare_gosdk_mod_for_vpk() {
   local gosdk_dir="$1"
   local repo_root="$2"
@@ -43,12 +39,18 @@ prepare_gosdk_mod_for_vpk() {
     return 0
   fi
 
-  local pseudo
-  pseudo="$(guest_sdk_pseudo_version "$repo_root")"
+  local sdk_version tag_root="${VIVARCUS_REPO_ROOT:-$repo_root}"
+  if ! sdk_version="$(resolve_sdk_module_version "$tag_root")"; then
+    echo "prepare_gosdk_mod_for_vpk: could not resolve github.com/vivarcus/vivarcus-sdk version (set VIVARCUS_PLATFORM_TAG or VIVARCUS_SDK_MODULE_REF)" >&2
+    return 1
+  fi
+  local gosdk_go
+  gosdk_go="$(sed -n 's/^go //p' "${repo_root}/sdk/go.mod" | head -1)"
+  [ -n "$gosdk_go" ] || gosdk_go="1.26.2"
 
-  python3 - "$mod" "$pseudo" <<'PY'
+  python3 - "$mod" "$sdk_version" "$gosdk_go" <<'PY'
 import re, sys
-path, pseudo = sys.argv[1], sys.argv[2]
+path, sdk_version, go_ver = sys.argv[1], sys.argv[2], sys.argv[3]
 sdk_modules = (
     "github.com/vivarcus/vivarcus-sdk",
 )
@@ -59,7 +61,7 @@ seen_sdk = False
 for line in lines:
     stripped = line.strip()
     if stripped.startswith("go "):
-        out.append("go 1.22.12")
+        out.append(f"go {go_ver}")
         continue
     if stripped == "require (":
         in_require = True
@@ -68,26 +70,26 @@ for line in lines:
     if in_require and stripped == ")":
         in_require = False
         if not seen_sdk:
-            out.append(f"\t{sdk_modules[0]} {pseudo}")
+            out.append(f"\t{sdk_modules[0]} {sdk_version}")
         out.append(line)
         continue
     if stripped.startswith("require "):
         fields = stripped.split()
         if len(fields) >= 3 and fields[1] in sdk_modules:
-            out.append(f"require {fields[1]} {pseudo}")
+            out.append(f"require {fields[1]} {sdk_version}")
             seen_sdk = True
             continue
     if in_require:
         fields = stripped.split()
         if len(fields) >= 2 and fields[0] in sdk_modules:
-            out.append(f"\t{fields[0]} {pseudo}")
+            out.append(f"\t{fields[0]} {sdk_version}")
             seen_sdk = True
             continue
     out.append(line)
 if not seen_sdk:
     if out and out[-1].strip() != "":
         out.append("")
-    out.append(f"require {sdk_modules[0]} {pseudo}")
+    out.append(f"require {sdk_modules[0]} {sdk_version}")
 with open(path, "w", encoding="utf-8") as f:
     f.write("\n".join(out).rstrip() + "\n")
 PY
@@ -125,7 +127,7 @@ with open(path, "w", encoding="utf-8") as f:
     f.write("\n".join(out).rstrip() + "\n")
 PY
 
-  populate_gosdk_sum_from_proxy "$gosdk_dir"
+  populate_gosdk_sum_from_proxy "$gosdk_dir" "$repo_root"
 
   if [ ! -f "${gosdk_dir}/go.sum" ]; then
     echo "prepare_gosdk_mod_for_vpk: warning: no go.sum (SDK resolved via platform injectGuestReplaces)" >&2
@@ -134,17 +136,22 @@ PY
 
 populate_gosdk_sum_from_proxy() {
   local gosdk_dir="$1"
-  local ref="${VIVARCUS_SDK_MODULE_REF:-main}"
-  local resolved helper
+  local repo_root="${2:-}"
+  local ref helper resolved
+  ref="$(normalize_sdk_module_list_ref "$(resolve_sdk_module_ref "${VIVARCUS_REPO_ROOT:-$repo_root}")")"
 
   resolved="$(GOPROXY="${GOPROXY:-direct}" go list -m "github.com/vivarcus/vivarcus-sdk@${ref}" 2>/dev/null | awk '{print $2}')" || return 0
   [ -n "$resolved" ] || return 0
 
   helper="$(mktemp -d)"
+  local gosdk_go="1.26.2"
+  if [ -n "$repo_root" ] && [ -f "${repo_root}/sdk/go.mod" ]; then
+    gosdk_go="$(sed -n 's/^go //p' "${repo_root}/sdk/go.mod" | head -1)"
+  fi
   cat > "${helper}/go.mod" <<EOF
 module example.com/vivarcus-sdk-sum
 
-go 1.22
+go ${gosdk_go}
 
 require github.com/vivarcus/vivarcus-sdk ${resolved}
 EOF
@@ -261,8 +268,7 @@ with open(path, "w", encoding="utf-8") as f:
 PY
 fi
 
-# Pin SDK require to a pseudo-version and emit go.sum (customer VPK path).
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Pin SDK require to Go module tag (dual-tag) and emit go.sum (customer VPK path).
 resolve_sdk_module_root() {
   local dir="$1"
   while [ "$dir" != "/" ]; do

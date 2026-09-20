@@ -6,7 +6,7 @@
 
 ```bash
 cd examples/04-lifecycle-entry
-GOTOOLCHAIN=go1.22.12 vivarcus-sdk build . -o action.wasm
+GOTOOLCHAIN=go1.26.2 vivarcus-sdk build . -o action.wasm
 # 先 apply lifecycle MDL，再 package-vpk + deploy（见 mdl/README.md）
 ```
 
@@ -14,7 +14,7 @@ GOTOOLCHAIN=go1.22.12 vivarcus-sdk build . -o action.wasm
 
 ```bash
 cd examples/04-lifecycle-entry
-GOTOOLCHAIN=go1.22.12 vivarcus-sdk build . -o action.wasm
+GOTOOLCHAIN=go1.26.2 vivarcus-sdk build . -o action.wasm
 ```
 
 Combo VPK 与 [multi-component](../multi-component) 相同模式。

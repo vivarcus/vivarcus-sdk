@@ -10,8 +10,8 @@
 
 | 工具 | 用途 |
 |------|------|
-| [Go](https://go.dev/dl/) 1.22+ | 编写 Action / Trigger |
-| [TinyGo](https://tinygo.org/getting-started/) | 本地 build 校验（VPK 只上传 Go 源码） |
+| [Go](https://go.dev/dl/)（见 `sdk/go.mod`） | 编写 Action / Trigger |
+| [TinyGo](https://tinygo.org/getting-started/)（见 `deploy/toolchain-versions.env`） | 本地 build 校验（VPK 只上传 Go 源码） |
 | [vivarcus-sdk](docs/03-build.md) | 扫描、codegen、`vivarcus-sdk build` |
 | [vivarcus CLI](docs/01-prerequisites.md) | 部署 VPK 到 Vault |
 
@@ -26,7 +26,8 @@ cd vivarcus-sdk
 
 ```bash
 cd examples/multi-component
-GOTOOLCHAIN=go1.22.12 vivarcus-sdk build . -o action.wasm
+# GOTOOLCHAIN 默认读 sdk/go.mod；或 cd sdk && make build-multi-component
+GOTOOLCHAIN=go$(awk '/^go / {print $2; exit}' ../../go.mod) vivarcus-sdk build . -o action.wasm
 bash ../_shared/scripts/package-vpk.sh . action.vpk \
   --component 10:Object:sdk_demo__c:mdl/01-object.mdl
 # vivarcus package import → validate → deploy（见 docs/05-deploy.md）

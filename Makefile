@@ -1,9 +1,11 @@
 # Vivarcus SDK examples — build helpers (optional; see examples/README.md).
 
 SHELL := /bin/bash
-ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/examples
+SDK_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+ROOT := $(SDK_DIR)/examples
 VIVARCUS_SDK ?= vivarcus-sdk
-GOTOOLCHAIN ?= go1.22.12
+SDK_GO_VERSION := $(shell awk '/^go / {print $$2; exit}' $(SDK_DIR)/go.mod)
+GOTOOLCHAIN ?= go$(SDK_GO_VERSION)
 
 .PHONY: help build-all build-multi-component build-01-hello-action build-02-update-field build-03-confirm-dialog build-04-lifecycle-entry build-05-stamp-trigger build-06-query-field
 

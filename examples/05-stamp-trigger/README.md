@@ -6,7 +6,7 @@
 
 ```bash
 cd examples/05-stamp-trigger
-GOTOOLCHAIN=go1.22.12 vivarcus-sdk build . -o action.wasm
+GOTOOLCHAIN=go1.26.2 vivarcus-sdk build . -o action.wasm
 vivarcus-sdk describe action.wasm
 ```
 

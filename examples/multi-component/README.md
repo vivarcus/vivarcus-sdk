@@ -35,7 +35,7 @@ Deploy 时平台从 `gosdk/` Go 源码编译并扫描组件清单，投影：
 
 ```bash
 cd examples/multi-component
-GOTOOLCHAIN=go1.22.12 vivarcus-sdk build . -o action.wasm
+GOTOOLCHAIN=go1.26.2 vivarcus-sdk build . -o action.wasm
 bash ../_shared/scripts/package-vpk.sh . action.vpk \
   --component 10:Object:sdk_demo__c:mdl/01-object.mdl
 # vivarcus package import → validate → deploy（见 docs/05-deploy.md）
@@ -45,7 +45,7 @@ bash ../_shared/scripts/package-vpk.sh . action.vpk \
 
 ```bash
 cd examples/multi-component
-GOTOOLCHAIN=go1.22.12 vivarcus-sdk build . -o action.wasm
+GOTOOLCHAIN=go1.26.2 vivarcus-sdk build . -o action.wasm
 ```
 
 ## go.mod 说明

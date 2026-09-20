@@ -6,7 +6,7 @@
 
 ```bash
 cd examples/06-query-field
-GOTOOLCHAIN=go1.22.12 vivarcus-sdk build . -o action.wasm
+GOTOOLCHAIN=go1.26.2 vivarcus-sdk build . -o action.wasm
 bash ../_shared/scripts/package-vpk.sh . action.vpk \
   --component 10:Object:sdk_demo__c:mdl/01-object.mdl
 ```
@@ -17,6 +17,6 @@ bash ../_shared/scripts/package-vpk.sh . action.vpk \
 
 ```bash
 cd examples/06-query-field
-GOTOOLCHAIN=go1.22.12 vivarcus-sdk build . -o action.wasm
+GOTOOLCHAIN=go1.26.2 vivarcus-sdk build . -o action.wasm
 vivarcus-sdk test . --context sdk_demo__c/<record_id> --field title__c=old
 ```

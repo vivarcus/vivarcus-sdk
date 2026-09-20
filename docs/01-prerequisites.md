@@ -4,18 +4,19 @@
 
 | 软件 | 版本 | 用途 |
 |------|------|------|
-| Go | 1.22+ | 编写 Action 源码 |
-| TinyGo | 0.33+（建议最新稳定版） | 编译 wasm |
-| Go（TinyGo 兼容） | TinyGo 当前支持 Go 1.19–1.26 | 本机 Go 过新时 `vivarcus-sdk build` 会失败，见 [troubleshooting](troubleshooting.md) |
+| Go | 与 `sdk/go.mod` 一致（当前 1.26.2） | 编写 Action 源码 |
+| TinyGo | 与 `deploy/toolchain-versions.env` 一致（当前 0.41.1） | 编译 wasm |
 | vivarcus-sdk | 与 Vault 版本对齐 | 扫描、codegen、编译 wasm |
 | vivarcus CLI | 与目标 Vault 版本对齐 | MDL、VPK 部署 |
 
 ## 安装 TinyGo
 
 ```bash
-# Linux（示例）
-wget https://github.com/tinygo-org/tinygo/releases/download/v0.33.0/tinygo0.33.0.linux-amd64.tar.gz
-tar -xzf tinygo0.33.0.linux-amd64.tar.gz
+# Linux（版本见 deploy/toolchain-versions.env）
+TINYGO_VERSION=0.41.1
+wget "https://ghfast.top/https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo${TINYGO_VERSION}.linux-amd64.tar.gz" \
+  -O "tinygo${TINYGO_VERSION}.linux-amd64.tar.gz"
+tar -xzf "tinygo${TINYGO_VERSION}.linux-amd64.tar.gz"
 sudo mv tinygo /usr/local/
 export PATH="/usr/local/tinygo/bin:$PATH"
 tinygo version
@@ -23,13 +24,26 @@ tinygo version
 
 ## 安装 vivarcus-sdk
 
-从 [GitHub Releases](https://github.com/vivarcus/vivarcus-sdk/releases) 下载与 Vault 版本匹配的 `vivarcus-sdk` 二进制，或使用安装脚本：
+从 [GitHub Releases](https://github.com/vivarcus/vivarcus-sdk/releases) 下载与 Vault 版本匹配的 `vivarcus-sdk` 二进制（平台 tag，如 `v26R3.3-13316`），或使用安装脚本：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vivarcus/vivarcus-sdk/main/scripts/install-vivarcus-sdk.sh | bash
+VERSION=v26R3.3-13316 curl -fsSL https://raw.githubusercontent.com/vivarcus/vivarcus-sdk/main/scripts/install-vivarcus-sdk.sh | bash
 ```
 
 将 `vivarcus-sdk` 放入 `PATH`（例如 `~/.local/bin`）。
+
+### go.mod 与平台版本（双 tag）
+
+平台发版使用 Veeva 风格 tag（`v26R3.3-13316`），Go modules 不能识别 `26R3.3` 这种 ADCV 字符串。公开仓在**同一 commit** 上会再打 Go 兼容 tag（如 `v1.26.3-3.13316`），供 `go.mod` / `go get` 使用。
+
+| 用途 | tag 示例 |
+|------|----------|
+| Release / 二进制 / 镜像 | `v26R3.3-13316` |
+| `go.mod` `require` / `go get` | `v1.26.3-3.13316` |
+
+映射：`26R3.3` + assembly `13316` → `v1.26.3-3.13316`（Go module major 固定为 `v1.`，ADCV 编在 minor/patch/pre-release 里）。
+
+本地 clone 开发：`require v1.26.3-3.13317`（Go module tag，对齐当前 train）+ `replace => ../..`；打 VPK 时 `package-vpk.sh` 会按目标 Vault 重写版本并去掉 `replace`。
 
 若暂无 Release，请联系 Vivarcus 支持获取对应版本的构建工具。
 
