@@ -30,12 +30,13 @@ vivarcus package deploy <package_id> --confirm --json
 # 期望 deployment_status 为 deployed__v
 ```
 
-Combo VPK deploy 时：先应用 `components/` 内 MDL（如创建对象），再安装 gosdk（创建 **active** Recordaction）。
+Combo VPK deploy 时：先应用 `components/` 内 MDL（如创建对象），再安装 gosdk（创建 **active** Recordaction；`describe.triggers[]` 同时投影 **active** Recordtrigger）。
 
 部署成功后：
 
-- wasm 写入 blob store
+- 平台编译 wasm 并写入 blob store
 - 创建 **active** 的 `Recordaction` 与 `Objectaction`（`Meta.ObjectAction` 非空时）
+- `describe` 中的 Trigger 创建 **active** 的 `Recordtrigger`（`BEFORE_*` / `AFTER_*` 随 DML 自动执行）
 - `source_code` 格式为 `<blob_id>@<sha256hex>`
 
 ## 验证

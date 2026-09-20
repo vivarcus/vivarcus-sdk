@@ -1,8 +1,8 @@
 # Vivarcus SDK
 
-在 Vivarcus Vault 上开发 **Record Action**（记录页自定义按钮）的 Go 开发套件。代码编译为 WebAssembly，通过 Inbound VPK 部署，deploy 后在记录详情 **All Actions** 中可见。
+在 Vivarcus Vault 上开发 **Record Action**（记录页自定义按钮）与 **Record Trigger** 的 Go 开发套件。通过 Inbound VPK 部署，deploy 后在 Vault 中可见。
 
-> 对标 Veeva Vault Java SDK 的 `RecordAction`；Phase 1 使用 **Go + wasm**，`javasdk/` 暂不支持。
+> 对标 Veeva Vault Java SDK 的 `RecordAction` / `RecordTrigger`；Phase 1 使用 **Go**，`javasdk/` 暂不支持。
 
 ## 5 分钟 Quickstart
 
@@ -10,9 +10,9 @@
 
 | 工具 | 用途 |
 |------|------|
-| [Go](https://go.dev/dl/) 1.22+ | 编写 Action |
-| [TinyGo](https://tinygo.org/getting-started/) | 编译 wasm |
-| [vivarcus-sdk](docs/03-build.md) | 扫描、codegen、编译 wasm |
+| [Go](https://go.dev/dl/) 1.22+ | 编写 Action / Trigger |
+| [TinyGo](https://tinygo.org/getting-started/) | 本地 build 校验（VPK 只上传 Go 源码） |
+| [vivarcus-sdk](docs/03-build.md) | 扫描、codegen、`vivarcus-sdk build` |
 | [vivarcus CLI](docs/01-prerequisites.md) | 部署 VPK 到 Vault |
 
 ```bash
@@ -20,7 +20,21 @@ git clone https://github.com/vivarcus/vivarcus-sdk.git
 cd vivarcus-sdk
 ```
 
-### 2. 写 Action
+### 2. 推荐：端到端示例
+
+从 **[examples/multi-component](examples/multi-component)** 开始——一个 module、多个 Action + Trigger、一个 combo VPK：
+
+```bash
+vivarcus auth login && vivarcus config set default_vault <uuid>
+cd examples/multi-component
+./scripts/dev-demo.sh
+```
+
+或仓库内：`make -C sdk/examples demo-multi-component` / `make sdk-multi-component-demo`。
+
+涵盖 `go.mod` + `shared/` 布局、对象 MDL、VPK 打包、`import` → `validate` → `deploy`、API 自动验收。
+
+### 3. 写 Action
 
 从模板开始：
 
@@ -29,7 +43,7 @@ cp templates/action/main.go.tpl my-action/main.go
 # 编辑 my-action/main.go，实现 Meta / IsExecutable / Execute
 ```
 
-或参考示例：
+分场景精读示例：
 
 | 示例 | 路径 | 说明 |
 |------|------|------|
@@ -37,36 +51,32 @@ cp templates/action/main.go.tpl my-action/main.go
 | 更新字段 | [examples/02-update-field](examples/02-update-field) | 记录页按钮：`SetValue` + `platform.Update` |
 | 确认对话框 | [examples/03-confirm-dialog](examples/03-confirm-dialog) | `OnPreExecute` / `OnPostExecute` |
 | **系统自动执行** | [examples/04-lifecycle-entry](examples/04-lifecycle-entry) | entry / event / workflow / cancel 分步跟做 |
-| 端到端（**多 Action**） | [examples/99-full-stack](examples/99-full-stack) | 同一 module、一份 wasm、一个 combo VPK |
+| Record Trigger | [examples/05-stamp-trigger](examples/05-stamp-trigger) | 单一 Trigger 入口 |
 
-### 3. 构建 wasm
+### 4. 构建
 
 ```bash
-vivarcus-sdk build ./my-action -o action.wasm
-vivarcus-sdk describe action.wasm   # Recordaction 名由 go.mod + 类型名派生
+vivarcus-sdk build ./my-action
+vivarcus-sdk describe ./my-action/action.wasm   # Recordaction 名由 go.mod + 类型名派生
 ```
 
-### 4. 准备 Vault 元数据（MDL）
+### 5. 准备 Vault 元数据（MDL）
 
-部署 Action 前，目标对象须已存在。复制并修改模板：
+部署前，目标对象须已存在。复制并修改模板：
 
 ```bash
 # 见 templates/mdl/README.md
 vivarcus mdl run templates/mdl/01-object.mdl
 ```
 
-### 5. 打包并部署 VPK
+### 6. 打包并部署 VPK
 
-```bash
-cd examples/99-full-stack
-./scripts/dev-demo.sh
-```
+见 [multi-component](examples/multi-component) 或 [docs/05-deploy.md](docs/05-deploy.md)。VPK `gosdk/` 只放 Go 源码，可含多个 Action/Trigger。
 
-或手工：`vivarcus-sdk build . -o /tmp/action.wasm` 后 `_shared/scripts/package-vpk.sh …`（一份 wasm，可含多个 Action）。
+### 7. 验证
 
-### 6. 验证
-
-打开记录详情 → **All Actions** → 点击按钮验证。
+- 按钮：记录详情 **All Actions**
+- Trigger：创建记录时自动执行（multi-component demo 会 API 验收）
 
 ## 文档
 

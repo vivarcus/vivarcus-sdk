@@ -126,7 +126,7 @@ def verify_lifecycle() -> None:
     print("\nALL PASS: event / entry / workflow step / cancel")
 
 
-def verify_full_stack() -> None:
+def verify_multi_component() -> None:
     obj = req("DEMO_OBJECT")
     field = os.environ.get("DEMO_TITLE_FIELD", "title__c")
     set_action = req("DEMO_SET_TITLE_ACTION")
@@ -144,6 +144,15 @@ def verify_full_stack() -> None:
     rec = body.get("record_id") or body.get("id")
     if not rec:
         die(f"create missing record_id: {body}")
+
+    want_name_suffix = os.environ.get("DEMO_EXPECT_NAME_SUFFIX", "").strip()
+    if want_name_suffix:
+        data = client.vivarcus("object", "get", obj, rec).get("data") or {}
+        got_name = data.get("name__v")
+        print(f"  after create: name__v={got_name!r}")
+        if not isinstance(got_name, str) or not got_name.endswith(want_name_suffix):
+            die(f"trigger name__v: want suffix {want_name_suffix!r} got {got_name!r}")
+        print("PASS record trigger stamped name__v")
 
     print(f"=== execute {set_action} ===")
     client.api(
@@ -169,19 +178,55 @@ def verify_full_stack() -> None:
     if got != want_clear:
         die(f"clear_title: want {want_clear!r} got {got!r}")
 
-    print("PASS multi-action full-stack demo")
+    entry_want = os.environ.get("DEMO_ENTRY_TITLE_EXPECTED", "").strip()
+    submit = os.environ.get("DEMO_SUBMIT_ACTION", "submit__c").strip()
+    if entry_want:
+        print("=== verify entry_action (transition → in_review) ===")
+        body = client.api(
+            "POST",
+            f"/api/v1/objects/{obj}/records",
+            {"fields": {"name__v": "multi-entry-demo", field: "initial"}},
+        )
+        rec_entry = body.get("record_id") or body.get("id")
+        if not rec_entry:
+            die(f"create missing record_id: {body}")
+
+        want_name_suffix = os.environ.get("DEMO_EXPECT_NAME_SUFFIX", "").strip()
+        if want_name_suffix:
+            data = client.vivarcus("object", "get", obj, rec_entry).get("data") or {}
+            got_name = data.get("name__v")
+            print(f"  after create: name__v={got_name!r}")
+            if not isinstance(got_name, str) or not got_name.endswith(want_name_suffix):
+                die(f"entry create trigger name__v: want suffix {want_name_suffix!r} got {got_name!r}")
+
+        data = client.vivarcus("object", "get", obj, rec_entry).get("data") or {}
+        got = data.get(field)
+        print(f"  before transition: {field}={got!r}")
+        if got == entry_want:
+            die(f"entry_action should not run before transition, got {field}={got!r}")
+
+        client.vivarcus("lifecycle", "transition", obj, rec_entry, "--action", submit)
+        data = client.vivarcus("object", "get", obj, rec_entry).get("data") or {}
+        got = data.get(field)
+        state = data.get("state__v")
+        print(f"  after transition: {field}={got!r} state={state!r}")
+        if got != entry_want:
+            die(f"entry_action: want {entry_want!r} got {got!r} state={state!r}")
+        print("PASS entry_action stamped title on state enter")
+
+    print("PASS multi-component demo")
 
 
 def main() -> None:
     scenario = os.environ.get("DEMO_SCENARIO", "").strip()
     if not scenario:
-        die("DEMO_SCENARIO required (user-action|lifecycle|full-stack)")
+        die("DEMO_SCENARIO required (user-action|lifecycle|multi-component)")
     if scenario == "user-action":
         verify_user_action()
     elif scenario == "lifecycle":
         verify_lifecycle()
-    elif scenario == "full-stack":
-        verify_full_stack()
+    elif scenario == "multi-component":
+        verify_multi_component()
     else:
         die(f"unknown DEMO_SCENARIO={scenario!r}")
 

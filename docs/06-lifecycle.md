@@ -56,7 +56,7 @@ deploy 时会创建 active 的 Recordaction；`Meta.ObjectAction` 非空时还�
 
 ## 推荐学习路径
 
-1. [02-update-field](../examples/02-update-field) + [99-full-stack](../examples/99-full-stack) — 按钮
+1. [02-update-field](../examples/02-update-field) + [multi-component](../examples/multi-component) — 按钮
 2. [04-lifecycle-entry](../examples/04-lifecycle-entry) — entry → event → workflow → cancel
 
 Record Action API：[02-record-action](02-record-action.md)；部署：[05-deploy](05-deploy.md)。

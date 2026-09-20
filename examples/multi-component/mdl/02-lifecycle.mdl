@@ -1,0 +1,26 @@
+CREATE Objectlifecycle IF NOT EXISTS sdk_demo_lc__c (
+  label('SDK Demo LC'),
+  active(true),
+  starting_state('Objectlifecyclestate.draft__c'),
+  Objectlifecyclestate draft__c(
+    label('Draft'),
+    active(true),
+    record_status('active__v')
+  ),
+  Objectlifecyclestate in_review__c(
+    label('In Review'),
+    active(true),
+    record_status('active__v')
+  ),
+  Objectlifecyclestateuseraction draft__c.submit__c(
+    label('Submit'),
+    rule({<?xml version="1.0" encoding="UTF-8"?>
+<rule><actions><action type="LIFECYCLE_STATE_CHANGE_ACTION" transitionState="Objectlifecyclestate.in_review__c"/></actions></rule>}),
+    order(1000)
+  ),
+  Objectlifecyclestateentryaction in_review__c.stamp__c(
+    rule({<?xml version="1.0" encoding="UTF-8"?>
+<rule><actions><action type="Recordaction.{{ACTION_FQN}}"/></actions></rule>}),
+    order(1000)
+  )
+);

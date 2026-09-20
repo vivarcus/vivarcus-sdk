@@ -1,0 +1,14 @@
+CREATE Object IF NOT EXISTS sdk_demo__c (
+  label('SDK Demo'),
+  label_plural('SDK Demos'),
+  active(true),
+  in_menu(true),
+  audit(false),
+  Field name__v (
+    type('String'),
+    label('Name'),
+    required(false),
+    list_column(true),
+    active(true)
+  )
+);

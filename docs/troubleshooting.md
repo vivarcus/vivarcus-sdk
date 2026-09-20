@@ -21,7 +21,7 @@
 | `gosdk_invalid` + describe / missing | wasm 须导出 `__sdk_describe` 且列出至少一条 Action |
 
 ```bash
-sha256sum gosdk/action.wasm
+本地可用 `vivarcus-sdk build` 验证；VPK `gosdk/` 只放 Go 源码，不要放 `.wasm`
 ```
 
 ## 部署成功但按钮不出现
@@ -48,4 +48,4 @@ sha256sum gosdk/action.wasm
 ## 获取帮助
 
 - Agent：读 [AGENTS.md](../AGENTS.md) 检查清单
-- 示例对照：[examples/99-full-stack](../examples/99-full-stack)
+- 示例对照：[examples/multi-component](../examples/multi-component)

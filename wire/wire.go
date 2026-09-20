@@ -55,10 +55,42 @@ type Meta struct {
 	RunAs               string   `json:"run_as,omitempty"`
 }
 
-// Describe is the payload returned by __sdk_describe (one wasm, many actions).
+// TriggerMeta is one Record Trigger's metadata inside a Describe payload.
+type TriggerMeta struct {
+	ComponentName string   `json:"component_name,omitempty"`
+	Label         string   `json:"label"`
+	Object        string   `json:"object,omitempty"`
+	Events        []string `json:"events"`
+	EventSegment  string   `json:"event_segment,omitempty"`
+	Order         int      `json:"order,omitempty"`
+	RunAs         string   `json:"run_as,omitempty"`
+}
+
+// Describe is the payload returned by __sdk_describe (one wasm, many entries).
 type Describe struct {
-	APIVersion string `json:"api_version"`
-	Actions    []Meta `json:"actions"`
+	APIVersion string        `json:"api_version"`
+	Actions    []Meta        `json:"actions,omitempty"`
+	Triggers   []TriggerMeta `json:"triggers,omitempty"`
+}
+
+// TriggerContext is the Record Trigger context crossing the host/guest boundary.
+type TriggerContext struct {
+	Trigger          string  `json:"trigger,omitempty"`
+	Event            string  `json:"event"`
+	EventSegment     string  `json:"event_segment,omitempty"`
+	Old              *Record `json:"old,omitempty"`
+	New              *Record `json:"new,omitempty"`
+	VaultID          string  `json:"vault_id"`
+	CurrentUserID    string  `json:"current_user_id"`
+	InitiatingUserID string  `json:"initiating_user_id"`
+}
+
+// TriggerResult is returned from guest execute_trigger.
+type TriggerResult struct {
+	Error           string     `json:"error,omitempty"`
+	Mutations       []Mutation `json:"mutations,omitempty"`
+	SetErrorSubtype string     `json:"set_error_subtype,omitempty"`
+	SetErrorMessage string     `json:"set_error_message,omitempty"`
 }
 
 // ExecuteResult is returned from guest execute.

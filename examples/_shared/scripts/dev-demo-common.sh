@@ -117,11 +117,16 @@ demo_apply_example_defaults() {
       IN_REVIEW_STATE="${IN_REVIEW_STATE:-in_review__c}"
       EXPECTED_TITLE="${EXPECTED_TITLE:-stamped-on-enter}"
       ;;
-    99-full-stack)
+    multi-component)
       SET_TITLE_ACTION="${SET_TITLE_ACTION:-set_title__c}"
       CLEAR_TITLE_ACTION="${CLEAR_TITLE_ACTION:-clear_title__c}"
       SET_TITLE_EXPECTED="${SET_TITLE_EXPECTED:-from-sdk}"
       CLEAR_TITLE_EXPECTED="${CLEAR_TITLE_EXPECTED-}"
+      EXPECT_NAME_SUFFIX="${EXPECT_NAME_SUFFIX:--trig}"
+      LIFECYCLE="${LIFECYCLE:-sdk_demo_lc__c}"
+      SUBMIT_ACTION="${SUBMIT_ACTION:-submit__c}"
+      ENTRY_TITLE_EXPECTED="${ENTRY_TITLE_EXPECTED:-stamped-on-enter}"
+      STAMP_ON_ENTER_MATCH="${STAMP_ON_ENTER_MATCH:-StampOnEnter}"
       ;;
   esac
 }
@@ -185,7 +190,7 @@ demo_fill_from_describe() {
   export ACTION_FQN OBJECT OBJECT_ACTION
 }
 
-demo_fill_full_stack_from_describe() {
+demo_fill_multi_component_from_describe() {
   if [ -z "${DEMO_DESCRIBE_JSON:-}" ]; then
     demo_load_describe
   fi
@@ -200,18 +205,26 @@ demo_fill_full_stack_from_describe() {
   if [ -z "${OBJECT:-}" ]; then
     OBJECT=$(printf '%s' "$DEMO_DESCRIBE_JSON" | demo_describe_field object "$SET_TITLE_ACTION")
   fi
-  export SET_TITLE_ACTION CLEAR_TITLE_ACTION SET_TITLE_FQN CLEAR_TITLE_FQN OBJECT
+  STAMP_ON_ENTER_MATCH="${STAMP_ON_ENTER_MATCH:-StampOnEnter}"
+  if [ -z "${ENTRY_ACTION_FQN:-}" ]; then
+    ENTRY_ACTION_FQN=$(printf '%s' "$DEMO_DESCRIBE_JSON" | demo_describe_field component_name "$STAMP_ON_ENTER_MATCH")
+  fi
+  if [ -z "$ENTRY_ACTION_FQN" ]; then
+    echo "could not read entry Recordaction FQN (match=${STAMP_ON_ENTER_MATCH}) from wasm describe" >&2
+    exit 1
+  fi
+  export SET_TITLE_ACTION CLEAR_TITLE_ACTION SET_TITLE_FQN CLEAR_TITLE_FQN OBJECT ENTRY_ACTION_FQN
 }
 
 demo_deploy_vpk() {
-  demo_deploy_vpk_at "$WORKDIR/action.wasm" "$WORKDIR/action.vpk"
+  demo_deploy_vpk_at "$EXAMPLE_DIR" "$WORKDIR/action.vpk"
 }
 
 demo_deploy_vpk_at() {
-  local wasm="$1"
+  local module_dir="$1"
   local vpk="$2"
   shift 2
-  "$PACKAGE_VPK" "$@" "$wasm" "$vpk" >/dev/null
+  "$PACKAGE_VPK" "$@" "$module_dir" "$vpk" >/dev/null
   if [ -n "${DEMO_DIST:-}" ]; then
     demo_dist_publish_vpk "$vpk"
   fi
@@ -254,13 +267,16 @@ demo_export_lifecycle_verify_env() {
   export DEMO_IN_REVIEW_STATE="${IN_REVIEW_STATE:-in_review__c}"
 }
 
-demo_export_full_stack_verify_env() {
+demo_export_multi_component_verify_env() {
   export DEMO_OBJECT="${OBJECT:?OBJECT required}"
   export DEMO_TITLE_FIELD="${TITLE_FIELD:-title__c}"
   export DEMO_SET_TITLE_ACTION="${SET_TITLE_ACTION:?SET_TITLE_ACTION required}"
   export DEMO_SET_TITLE_EXPECTED="${SET_TITLE_EXPECTED:?SET_TITLE_EXPECTED required}"
   export DEMO_CLEAR_TITLE_ACTION="${CLEAR_TITLE_ACTION:?CLEAR_TITLE_ACTION required}"
   export DEMO_CLEAR_TITLE_EXPECTED="${CLEAR_TITLE_EXPECTED-}"
+  export DEMO_EXPECT_NAME_SUFFIX="${EXPECT_NAME_SUFFIX-}"
+  export DEMO_ENTRY_TITLE_EXPECTED="${ENTRY_TITLE_EXPECTED-}"
+  export DEMO_SUBMIT_ACTION="${SUBMIT_ACTION:-submit__c}"
 }
 
 # 02 / 03 — single user Objectaction on a demo object.
@@ -273,9 +289,9 @@ demo_scenario_user_action() {
   local object_mdl="$DEMO_DIST/mdl/01-object.mdl"
   demo_render_mdl "$MDL_DIR/01-object.mdl" "$object_mdl"
 
-  echo "== deploy VPK (object MDL in components/00010 + gosdk wasm) =="
+  echo "== deploy VPK (object MDL in components/00010 + gosdk source) =="
   demo_deploy_vpk_at \
-    "$WORKDIR/action.wasm" "$DEMO_DIST/action.vpk" \
+    "$EXAMPLE_DIR" "$DEMO_DIST/action.vpk" \
     $(demo_object_component_arg "$object_mdl")
 
   echo "setup complete (object=${OBJECT} action=${OBJECT_ACTION} fqn=${ACTION_FQN})"
@@ -300,9 +316,9 @@ demo_scenario_lifecycle() {
   local object_mdl="$DEMO_DIST/mdl/01-object.mdl"
   demo_render_mdl "$MDL_DIR/01-object.mdl" "$object_mdl"
 
-  echo "== deploy Recordaction VPK (object + gosdk wasm) =="
+  echo "== deploy Recordaction VPK (object + gosdk source) =="
   demo_deploy_vpk_at \
-    "$WORKDIR/action.wasm" "$DEMO_DIST/action.vpk" \
+    "$EXAMPLE_DIR" "$DEMO_DIST/action.vpk" \
     $(demo_object_component_arg "$object_mdl")
 
   demo_apply_mdl_template "$MDL_DIR/04-workflow-action.mdl"
@@ -312,22 +328,29 @@ demo_scenario_lifecycle() {
   echo "see artifacts under $DEMO_DIST/"
 }
 
-# 99 — multiple actions, one wasm.
-demo_scenario_full_stack() {
+# multi-component — user actions + lifecycle entry + trigger, one module / one VPK.
+demo_scenario_multi_component() {
   demo_require_auth
 
-  echo "== build wasm =="
+  echo "== build =="
   demo_build_wasm
-  demo_fill_full_stack_from_describe
+  demo_fill_multi_component_from_describe
+
+  echo "== apply MDL (lifecycle entry_action; object MDL ships in VPK components/00010) =="
+  ACTION_FQN="${ENTRY_ACTION_FQN:?ENTRY_ACTION_FQN required}"
+  export ACTION_FQN
+  demo_apply_mdl_template "$MDL_DIR/02-lifecycle.mdl"
+  demo_apply_mdl_template_optional "$MDL_DIR/03-bind-object-lifecycle.mdl"
+  unset ACTION_FQN
 
   local object_mdl="$DEMO_DIST/mdl/01-object.mdl"
   demo_render_mdl "$MDL_DIR/01-object.mdl" "$object_mdl"
 
-  echo "== deploy combo VPK (object + gosdk wasm with both actions) =="
+  echo "== deploy combo VPK (object + gosdk source with actions + trigger) =="
   demo_deploy_vpk_at \
-    "$WORKDIR/action.wasm" "$DEMO_DIST/action.vpk" \
+    "$EXAMPLE_DIR" "$DEMO_DIST/action.vpk" \
     $(demo_object_component_arg "$object_mdl")
 
-  echo "setup complete (object=${OBJECT} actions=${SET_TITLE_ACTION},${CLEAR_TITLE_ACTION})"
+  echo "setup complete (object=${OBJECT} actions=${SET_TITLE_ACTION},${CLEAR_TITLE_ACTION} entry=${ENTRY_ACTION_FQN})"
   echo "see artifacts under $DEMO_DIST/"
 }

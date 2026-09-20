@@ -11,7 +11,7 @@ EXAMPLES_ROOT=$(cd "$SHARED_DIR/../.." && pwd)
 
 usage() {
   sed -n '2,8p' "$0" | cut -c3-
-  echo "examples: 02-update-field 03-confirm-dialog 04-lifecycle-entry 99-full-stack"
+  echo "examples: multi-component 02-update-field 03-confirm-dialog 04-lifecycle-entry"
 }
 
 if [ $# -lt 1 ]; then
@@ -69,7 +69,7 @@ if [ -z "$DEMO_SCENARIO" ]; then
   case "$(basename "$EXAMPLE_DIR")" in
     02-update-field|03-confirm-dialog) DEMO_SCENARIO=user-action ;;
     04-lifecycle-entry) DEMO_SCENARIO=lifecycle ;;
-    99-full-stack) DEMO_SCENARIO=full-stack ;;
+    multi-component) DEMO_SCENARIO=multi-component ;;
     *)
       echo "unknown example $(basename "$EXAMPLE_DIR")" >&2
       exit 1
@@ -86,7 +86,7 @@ setup_demo() {
   case "$DEMO_SCENARIO" in
     user-action) demo_scenario_user_action ;;
     lifecycle) demo_scenario_lifecycle ;;
-    full-stack) demo_scenario_full_stack ;;
+    multi-component) demo_scenario_multi_component ;;
     *)
       echo "unknown DEMO_SCENARIO=$DEMO_SCENARIO" >&2
       exit 1
@@ -105,9 +105,9 @@ verify_demo() {
       demo_fill_from_describe
       demo_export_lifecycle_verify_env
       ;;
-    full-stack)
-      demo_fill_full_stack_from_describe
-      demo_export_full_stack_verify_env
+    multi-component)
+      demo_fill_multi_component_from_describe
+      demo_export_multi_component_verify_env
       ;;
   esac
   python3 "$VERIFY_SCRIPT"

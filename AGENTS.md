@@ -16,11 +16,11 @@
 | 新建 Record Action | `templates/action/main.go.tpl` | 实现接口 → `vivarcus-sdk build` |
 | 按钮改字段 | `examples/02-update-field/` | 对齐 `Meta.Object` 与 MDL 对象 api_name |
 | 执行前确认框 | `examples/03-confirm-dialog/` | 实现 `OnPreExecute` |
-| 记录页按钮（端到端） | `examples/99-full-stack/` | MDL + VPK + deploy |
+| 记录页按钮（端到端） | `examples/multi-component/` | MDL + VPK + deploy |
 | **系统自动执行（entry/event/workflow/cancel）** | **`examples/04-lifecycle-entry/`** | 同一 wasm；Step 3–7 分路径绑 rule + 验证 |
 | 生命周期概念与两种挂法 | `docs/06-lifecycle.md` | 对照表 + 链到 04 示例 |
 | 创建对象 | `templates/mdl/01-object.mdl` | `vivarcus mdl run`（需 Vault Owner） |
-| 打包 VPK | `docs/04-package-vpk.md` | `gosdk/*.wasm` + 可选 `components/` |
+| 打包 VPK | `docs/04-package-vpk.md` | `gosdk/` Go 源码 + 可选 `components/` |
 | 部署到 Vault | `docs/05-deploy.md` | `vivarcus package import/validate/deploy --confirm` |
 | validate 失败 | `docs/troubleshooting.md` | 查 wasm import / describe `api_version` / 体积 |
 
@@ -35,9 +35,10 @@
 5. **VPK 结构**：
    ```
    vaultpackage.xml
-   gosdk/action.wasm
+   gosdk/go.mod
+   gosdk/main.go
    ```
-6. **部署**：`vivarcus package validate` 通过（`deployment_status` 非 `not_verified__v`），`deploy --confirm` 创建 active Recordaction / Objectaction。
+6. **部署**：`vivarcus package validate` 通过（`deployment_status` 非 `not_verified__v`），`deploy --confirm` 创建 active Recordaction / Objectaction / Recordtrigger。
 7. **验证**：
    - 按钮：记录详情 **All Actions**
    - 系统路径：见 [04-lifecycle-entry](examples/04-lifecycle-entry)（entry / event / workflow / cancel 分步）
@@ -52,7 +53,7 @@
 | `{{ACTION_FQN}}` | Recordaction 名 | `com.example.SetTitle`（`vivarcus-sdk describe`） |
 | `{{OBJECT_ACTION}}` | Objectaction api_name | `demo_request__c.approve__c` |
 | `{{LABEL}}` | 按钮显示名 | `Approve Request` |
-| `{{SHA256}}` | wasm 文件 SHA-256 hex | 由 `sha256sum action.wasm` 得到 |
+| `{{SHA256}}` | （已废弃）客户不再上传 wasm | 本地 `vivarcus-sdk build` 仅用于测试 |
 
 `component_name`（FQN）默认由 module 路径 + 类型名派生；需要固定名字时在 `Meta.Name` 显式写出。
 
@@ -93,7 +94,7 @@ rec.SetValue(field, value) // Execute 内暂存，配合 platform.Update 持久�
 | `examples/02-update-field` | 读写记录字段（UserAction 按钮） |
 | `examples/03-confirm-dialog` | 确认框 + 结果横幅 |
 | `examples/04-lifecycle-entry` | entry / event / workflow step / cancel（Step 4–8 + MDL 模板 04–07） |
-| `examples/99-full-stack` | MDL + VPK 脚本一条龙（按钮） |
+| `examples/multi-component` | **推荐**：多 Action/Trigger + MDL + VPK 一条龙 |
 
 ## 反馈
 

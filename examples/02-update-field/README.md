@@ -24,4 +24,4 @@ vivarcus-sdk build ./examples/02-update-field -o action.wasm
 | 创建对象 | VPK `components/00010/`（[mdl/01-object.mdl](mdl/01-object.mdl)） |
 | 打 VPK + deploy | [_shared/scripts/package-vpk.sh](../_shared/scripts/package-vpk.sh) |
 
-部署细节：[docs/05-deploy.md](../../docs/05-deploy.md)。端到端索引：[99-full-stack](../99-full-stack)。系统路径见 [04-lifecycle-entry](../04-lifecycle-entry)。
+部署细节：[docs/05-deploy.md](../../docs/05-deploy.md)。端到端索引：[multi-component](../multi-component)。系统路径见 [04-lifecycle-entry](../04-lifecycle-entry)。

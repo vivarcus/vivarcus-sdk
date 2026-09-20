@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Package an Inbound VPK: optional components/<step>/*.mdl + gosdk/*.wasm.
+# Package an Inbound VPK: optional components/<step>/*.mdl + gosdk/ Go source.
 #
 # Platform deploy order: all component steps (by step number), then gosdk last.
-# Import scans gosdk/*.wasm and projects Recordactions from __sdk_describe.
+# Import validates gosdk/ Go source; deploy compiles on the platform (ADR-21).
 #
 # Usage:
-#   package-vpk.sh [options] <action.wasm> [output.vpk]
+#   package-vpk.sh [options] <module-dir> [output.vpk]
 #
 # Options (repeatable):
 #   --component <step>:<Type>:<name>:<mdl-file>
@@ -42,11 +42,15 @@ while [ $# -gt 0 ] && [[ "$1" == --* ]]; do
   esac
 done
 
-WASM="${1:?wasm path required}"
+MODULE_DIR="${1:?module dir required}"
 OUT="${2:-}"
 
-if [ ! -f "$WASM" ]; then
-  echo "wasm not found: $WASM" >&2
+if [ ! -d "$MODULE_DIR" ]; then
+  echo "module dir not found: $MODULE_DIR" >&2
+  exit 1
+fi
+if [ ! -f "$MODULE_DIR/go.mod" ]; then
+  echo "go.mod required in module dir: $MODULE_DIR" >&2
   exit 1
 fi
 
@@ -72,7 +76,46 @@ for spec in "${COMPONENTS[@]}"; do
   printf '%s %s\n' "$md5" "$base" > "$DIST/$folder/${base}.md5"
 done
 
-cp "$WASM" "$DIST/gosdk/action.wasm"
+while IFS= read -r -d '' file; do
+  rel="${file#"$MODULE_DIR"/}"
+  case "$rel" in
+    action.wasm|*.wasm) continue ;;
+  esac
+  case "$(basename "$rel")" in
+    zz_generated_reactor.go) continue ;;
+  esac
+  mkdir -p "$DIST/gosdk/$(dirname "$rel")"
+  cp "$file" "$DIST/gosdk/$rel"
+done < <(find "$MODULE_DIR" -type f \( -name '*.go' -o -name 'go.mod' -o -name 'go.sum' \) -print0)
+
+# VPK gosdk/ must not ship monorepo replace directives (ADR-21 validate).
+if [ -f "$DIST/gosdk/go.mod" ]; then
+  python3 - "$DIST/gosdk/go.mod" <<'PY'
+import re, sys
+path = sys.argv[1]
+lines = open(path, encoding="utf-8").read().splitlines()
+out = []
+skip = False
+for line in lines:
+    if skip:
+        if line.strip() == ")":
+            skip = False
+        continue
+    if re.match(r"^replace\s*\(", line):
+        skip = True
+        continue
+    if re.match(r"^replace\s+", line):
+        continue
+    out.append(line)
+with open(path, "w", encoding="utf-8") as f:
+    f.write("\n".join(out).rstrip() + "\n")
+PY
+fi
+
+if ! find "$DIST/gosdk" -name '*.go' -print -quit | grep -q .; then
+  echo "no .go files copied from $MODULE_DIR" >&2
+  exit 1
+fi
 
 cat > "$DIST/vaultpackage.xml" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -85,10 +128,12 @@ EOF
 
 PKG_PATH="${OUT:-$DIST/demo-action.vpk}"
 ZIP_BASE="$(basename "$PKG_PATH")"
-( cd "$DIST" && zip -qr "$ZIP_BASE" vaultpackage.xml gosdk/ )
-if [ -d "$DIST/components" ]; then
-  ( cd "$DIST" && zip -qr "$ZIP_BASE" components/ )
-fi
+( cd "$DIST" && {
+  find vaultpackage.xml gosdk -type f -print
+  if [ -d components ]; then
+    find components -type f -print
+  fi
+} | zip -qr "$ZIP_BASE" -@ )
 if [ "$PKG_PATH" != "$DIST/$ZIP_BASE" ]; then
   mv "$DIST/$ZIP_BASE" "$PKG_PATH"
 fi
@@ -97,5 +142,4 @@ echo "created $PKG_PATH" >&2
 if [ "${#COMPONENTS[@]}" -gt 0 ]; then
   echo "  components: ${#COMPONENTS[@]} mdl file(s)" >&2
 fi
-sha256sum "$DIST/gosdk/action.wasm" >&2
 rm -rf "$DIST"
