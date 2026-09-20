@@ -72,7 +72,8 @@ for line in lines:
         continue
     if stripped.startswith("require "):
         fields = stripped.split()
-            out.append(f"require {mod} {pseudo}")
+        if len(fields) >= 3 and fields[1] in sdk_modules:
+            out.append(f"require {fields[1]} {pseudo}")
             seen_sdk = True
             continue
     if in_require:
