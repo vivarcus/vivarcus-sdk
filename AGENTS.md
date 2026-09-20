@@ -57,9 +57,14 @@
 
 `component_name`（FQN）默认由 module 路径 + 类型名派生；需要固定名字时在 `Meta.Name` 显式写出。
 
+## vivarcus CLI 认证（避免登录限流）
+
+部署与 MDL 命令依赖 `vivarcus`。**不要**每条命令前密码 login：服务端对 `POST /ui/auth/login` 限 **4 次/分钟/IP+用户**。整段任务注入并复用 `VIVARCUS_TOKEN`（+ `VIVARCUS_ENDPOINT`、`VIVARCUS_VAULT`），详见 [01-prerequisites](docs/01-prerequisites.md)。
+
 ## 禁止事项
 
 - **不要用 Java** 或 `javasdk/` VPK（平台返回 `not_supported__v`）。
+- **不要**在自动化循环中反复 `curl /ui/auth/login` 或每条 `vivarcus` 前重新 login（会 429）。
 - **不要** import `os`、`net`、`database/sql`、`unsafe` 等（编译期拒绝）。
 - **不要** 跳过 `validate` 直接 `deploy`。
 - **不要** 假设部署后按钮自动可见（须 `active(true)`）。

@@ -45,10 +45,27 @@ curl -fsSL https://raw.githubusercontent.com/vivarcus/vivarcus-cli/main/scripts/
 
 ## 配置 vivarcus CLI
 
+人工首次登录（OAuth Device Flow）：
+
 ```bash
 vivarcus auth login --endpoint https://<your-vault>.vivarcus.com
 vivarcus config set default_vault <vault_id>
 ```
+
+### Agent / CI：复用 token，避免登录限流
+
+密码登录限流：**同一 IP + 用户名，1 分钟最多 4 次**（`POST /ui/auth/login`、Vault REST `POST /api/{version}/auth`）。编码 Agent 与自动化脚本**不要在每条 `vivarcus` 命令前重新 login**，也不要在循环里 `curl` 密码登录。
+
+整段构建/部署任务复用同一 session token（最长 48 小时）：
+
+```bash
+export VIVARCUS_TOKEN=<session-token>
+export VIVARCUS_ENDPOINT=https://<your-vault>.vivarcus.com
+export VIVARCUS_VAULT=<vault_id>
+vivarcus auth status --json
+```
+
+token 可从浏览器 `localStorage`、一次性 `auth login` 或 CI secret 注入。已 429 时按响应头 `Retry-After` 等待后再试。
 
 ## Vault 权限
 

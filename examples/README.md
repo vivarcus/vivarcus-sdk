@@ -11,4 +11,6 @@
 
 先 `vivarcus auth login` 并 `vivarcus config set default_vault <uuid>`，再进入对应目录运行。
 
+**Agent / CI**：注入 `VIVARCUS_TOKEN` 等环境变量复用 session，勿每条命令前密码 login（限 4 次/分钟/IP+用户）。见 [01-prerequisites](../docs/01-prerequisites.md)。
+
 文档见 [README.md](../README.md)；Agent 见 [AGENTS.md](../AGENTS.md)。

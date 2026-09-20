@@ -59,6 +59,8 @@ cp go.mod main.go dist/gosdk/
 cd dist && zip -r ../my-action.vpk vaultpackage.xml components/ gosdk/
 ```
 
+`package-vpk.sh` 会去掉 `replace`、把 SDK `require` 改成伪版本，并尽量写入 `go.sum`（checksum 来自已发布的 `github.com/vivarcus/vivarcus-sdk`；可用 `VIVARCUS_SDK_MODULE_REF=main` 覆盖）。**不要**使用裸 `v0.0.0`。
+
 或示例脚本：
 
 ```bash

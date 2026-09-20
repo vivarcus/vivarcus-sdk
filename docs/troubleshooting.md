@@ -1,5 +1,17 @@
 # 排错
 
+## vivarcus 登录 HTTP 429（too many login attempts）
+
+密码登录限流：**同一 IP + 用户名，1 分钟最多 4 次**（`POST /ui/auth/login`、Vault REST `POST /api/{version}/auth`）。
+
+| 现象 | 处理 |
+|------|------|
+| `too many login attempts` / HTTP 429 | 按响应头 `Retry-After` 等待；勿连打 login |
+| Agent 每条命令前 login | 改为注入 `VIVARCUS_TOKEN`，整段任务复用（最长 48h） |
+| 多脚本同一用户连登 | 各脚本共用同一 token，或错开登录 |
+
+详见 [01-prerequisites](01-prerequisites.md) 与 [vivarcus CLI 认证章节](https://github.com/vivarcus/vivarcus-cli/blob/main/docs/cli.md#agent--自动化避免登录限流)。
+
 ## vivarcus-sdk build 失败
 
 | 现象 | 处理 |

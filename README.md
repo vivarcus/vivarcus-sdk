@@ -26,6 +26,7 @@ cd vivarcus-sdk
 
 ```bash
 vivarcus auth login && vivarcus config set default_vault <uuid>
+# Agent / CI：复用 VIVARCUS_TOKEN，勿每条命令前重新 login（密码登录 4 次/分钟/IP+用户）
 cd examples/multi-component
 ./scripts/dev-demo.sh
 ```
