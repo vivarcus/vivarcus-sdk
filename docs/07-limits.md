@@ -11,12 +11,14 @@
 
 ## 标准库：禁止使用
 
-编译期拒绝：
+平台编译拒绝（打进 `gosdk/` 的源码）：
 
 - `os`、`net`、`net/http`
 - `database/sql`、`os/exec`
 - `unsafe`、`syscall`、`testing`
 - `crypto/rand`
+
+`testing` 只用于本地 `*_test.go`；`sdk put` 与 `package-vpk.sh` 都不部署测试文件。入口代码不要 import `testing`。
 
 ## 标准库：受限
 
@@ -48,7 +50,7 @@
 
 - `javasdk/` VPK → `not_supported__v`
 - 客户 Action 部署后默认 **active**
-- 管理员可用 `ALTER active(false)` 停用
+- 管理员可用 `vivarcus sdk disable <FQN>`（或 `ALTER active(false)`）停用
 
 ## Record Trigger
 

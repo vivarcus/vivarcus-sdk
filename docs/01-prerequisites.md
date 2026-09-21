@@ -2,35 +2,14 @@
 
 ## 必需软件
 
+写代码并部署到 Vault **只需要**：
+
 | 软件 | 版本 | 用途 |
 |------|------|------|
-| Go | 与 `sdk/go.mod` 一致（当前 1.26.2） | 编写 Action 源码 |
-| TinyGo | 与 `deploy/toolchain-versions.env` 一致（当前 0.41.1） | 编译 wasm |
-| vivarcus-sdk | 与 Vault 版本对齐 | 扫描、codegen、编译 wasm |
+| Go | 与 `sdk/go.mod` 一致（当前 1.26.2） | 编写 Action 源码、本地 `go test` |
 | vivarcus CLI | 与目标 Vault 版本对齐 | MDL、VPK 部署 |
 
-## 安装 TinyGo
-
-```bash
-# Linux（版本见 deploy/toolchain-versions.env）
-TINYGO_VERSION=0.41.1
-wget "https://ghfast.top/https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo${TINYGO_VERSION}.linux-amd64.tar.gz" \
-  -O "tinygo${TINYGO_VERSION}.linux-amd64.tar.gz"
-tar -xzf "tinygo${TINYGO_VERSION}.linux-amd64.tar.gz"
-sudo mv tinygo /usr/local/
-export PATH="/usr/local/tinygo/bin:$PATH"
-tinygo version
-```
-
-## 安装 vivarcus-sdk
-
-从 [GitHub Releases](https://github.com/vivarcus/vivarcus-sdk/releases) 下载与 Vault 版本匹配的 `vivarcus-sdk` 二进制（平台 tag，如 `v26R3.3-13316`），或使用安装脚本：
-
-```bash
-VERSION=v26R3.3-13316 curl -fsSL https://raw.githubusercontent.com/vivarcus/vivarcus-sdk/main/scripts/install-vivarcus-sdk.sh | bash
-```
-
-将 `vivarcus-sdk` 放入 `PATH`（例如 `~/.local/bin`）。
+VPK 只上传 `.go`；wasm 由 Vault 镜像编译。本仓库（`github.com/vivarcus/vivarcus-sdk`）是 guest API，不含编译器。模块布局见 [03-build](03-build.md)。
 
 ### go.mod 与平台版本（双 tag）
 
@@ -38,14 +17,12 @@ VERSION=v26R3.3-13316 curl -fsSL https://raw.githubusercontent.com/vivarcus/viva
 
 | 用途 | tag 示例 |
 |------|----------|
-| Release / 二进制 / 镜像 | `v26R3.3-13316` |
+| Release / 镜像 | `v26R3.3-13316` |
 | `go.mod` `require` / `go get` | `v1.26.3-3.13316` |
 
 映射：`26R3.3` + assembly `13316` → `v1.26.3-3.13316`（Go module major 固定为 `v1.`，ADCV 编在 minor/patch/pre-release 里）。
 
 本地 clone 开发：`require v1.26.3-3.13317`（Go module tag，对齐当前 train）+ `replace => ../..`。打 VPK 时 `package-vpk.sh` **不**打包 `go.mod`；只把 `module` 行写入 `vaultpackage.xml`。平台编译始终用 Vault 镜像内的 SDK。
-
-若暂无 Release，请联系 Vivarcus 支持获取对应版本的构建工具。
 
 ## 安装 vivarcus CLI
 
@@ -92,13 +69,10 @@ token 可从浏览器 `localStorage`、一次性 `auth login` 或 CI secret 注�
 ## 验证环境
 
 ```bash
-# 1. tinygo 可用
-tinygo version
+# 1. Go 可用（版本见 sdk/go.mod）
+go version
 
-# 2. vivarcus-sdk 可用
-vivarcus-sdk build ./examples/01-hello-action --skip-compile
-
-# 3. vivarcus 已登录
+# 2. vivarcus 已登录
 vivarcus auth status
 ```
 

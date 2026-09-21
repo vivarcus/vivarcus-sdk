@@ -1,6 +1,8 @@
 # multi-component
 
-**推荐入口**：一个 Go module 里多种 Record Action + Record Trigger，打进 **一个** combo VPK，端到端部署到 Vault。
+**本仓库唯一用 Inbound VPK 部署的示例**：一个 Go module 里多种 Record Action + Record Trigger，打进 **一个** combo VPK。
+
+编号示例（01–09）全部改用 `vivarcus sdk put`，不要拿本目录的 `package-vpk.sh` 去部署它们。
 
 对标 ADR-21 客户源码树：`go.mod`、共享包（UDC 模式）、按子目录组织入口。
 
@@ -37,18 +39,15 @@ Deploy 时平台从 `gosdk/` Go 源码编译并扫描组件清单，投影：
 
 ```bash
 cd examples/multi-component
-GOTOOLCHAIN=go1.26.2 vivarcus-sdk build . -o action.wasm
 bash ../_shared/scripts/package-vpk.sh . action.vpk \
   --component 10:Object:sdk_demo__c:mdl/01-object.mdl
-# vivarcus package import → validate → deploy（见 docs/05-deploy.md）
+vivarcus package import ./action.vpk
+# 记下 package_id
+vivarcus package validate <package_id> --json
+vivarcus package deploy <package_id> --confirm --json
 ```
 
-## Build only
-
-```bash
-cd examples/multi-component
-GOTOOLCHAIN=go1.26.2 vivarcus-sdk build . -o action.wasm
-```
+不必本机编 wasm。模块布局见 [docs/03-build.md](../../docs/03-build.md)；三步细节见 [docs/05-deploy.md](../../docs/05-deploy.md)。
 
 ## go.mod 说明
 
@@ -57,18 +56,28 @@ GOTOOLCHAIN=go1.26.2 vivarcus-sdk build . -o action.wasm
 
 ## 流程（端到端）
 
-1. `vivarcus-sdk build` — 扫描 module、生成 glue、本地校验
-2. 应用 lifecycle MDL（`02-lifecycle.mdl` 把 entry_action 绑到 `Recordaction.<FQN>`）
-3. Combo VPK：对象 MDL + `gosdk/` Go 源码
-4. `import` → `validate` → `deploy`（投影 active Recordaction / Objectaction / Recordtrigger）
-5. 验证：
+1. 应用 lifecycle MDL（`02-lifecycle.mdl` 把 entry_action 绑到 `Recordaction.<FQN>`；须在 gosdk deploy **之后**，或与对象 MDL 分步 apply）
+2. Combo VPK：对象 MDL + `gosdk/` 全部 `.go`（`package-vpk.sh`）
+3. `import` → `validate` → `deploy`（Vault 编译；投影 active Recordaction / Objectaction / Recordtrigger）
+4. 验证：
    - CREATE 时 `StampName` Trigger 给 `name__v` 追加 `-trig`
    - 按钮 `set_title__c` → `title__c=from-sdk`，再 `clear_title__c` 清空
    - lifecycle `submit__c` 进入 `in_review__c` → `StampOnEnter` 把 `title__c` 写成 `stamped-on-enter`
+   - Agent 用 CLI 核对投影（FQN = `acme.corp.sdkdemo.<Type>`）：
 
-## 分场景精读
+```bash
+vivarcus sdk get acme.corp.sdkdemo.SetTitle -o /tmp/SetTitle.go --json
+# 可启停：SetTitle / ClearTitle / StampOnEnter / StampName
+# 不可启停：shared/title.go、shared/name.go 投影的 Sdkcode
+vivarcus sdk disable acme.corp.sdkdemo.SetTitle --json
+vivarcus sdk enable acme.corp.sdkdemo.SetTitle --json
+```
 
-| 主题 | 本示例 | 单一入口精读 |
+本树已用 VPK 一次部署齐全。不要对编号示例打 VPK；单文件迭代见 [01-hello-action](../01-hello-action)。
+
+## 分场景精读（编号示例用 sdk put）
+
+| 主题 | 本示例（VPK） | 单一入口（`sdk put`） |
 |------|--------|--------------|
 | 用户按钮改字段 | `actions/set_title.go` | [02-update-field](../02-update-field) |
 | 生命周期 entry_action | `actions/stamp_on_enter.go` + `mdl/02-lifecycle.mdl` | [04-lifecycle-entry](../04-lifecycle-entry) |

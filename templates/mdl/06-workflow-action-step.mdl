@@ -1,5 +1,5 @@
 -- 片段：Workflow Action 步骤的 step_detail（Perform actions rule）。
--- 将 {{ACTION_FQN}} 换成 `vivarcus-sdk describe` 输出的 component_name。
+-- 将 {{ACTION_FQN}} 换成 go.mod module + Go 类型名派生的 Recordaction FQN。
 --
 -- step_detail XML（嵌入 Objectworkflowstep type=action 的配置）：
 --

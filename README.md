@@ -1,8 +1,10 @@
 # Vivarcus SDK
 
-在 Vivarcus Vault 上开发 **Record Action**（记录页自定义按钮）、**Record Trigger**、**Job Processor**、**Custom Web API** 与 **Record Workflow Action** 的 Go 开发套件。通过 Inbound VPK 部署，deploy 后在 Vault 中可见。
+在 Vivarcus Vault 上开发 **Record Action**（记录页自定义按钮）、**Record Trigger**、**Job Processor**、**Custom Web API** 与 **Record Workflow Action** 的 Go 开发套件。编号示例用 **`vivarcus sdk put`** 部署单个 `.go`；多文件树用 **Inbound VPK**（仅 [multi-component](examples/multi-component)）。**Vault 编译源码**。
 
 > 对标 Veeva Vault Java SDK 的 `RecordAction` / `RecordTrigger` / `Job` / `WebApi` / `RecordWorkflowAction`；使用 **Go**，`javasdk/` 暂不支持。
+
+本仓库是 guest API、模板与示例。扫描 / codegen / tinygo 在 Vault 镜像里，不随本模块发布。
 
 ## 5 分钟 Quickstart
 
@@ -10,59 +12,64 @@
 
 | 工具 | 用途 |
 |------|------|
-| [Go](https://go.dev/dl/)（见 `sdk/go.mod`） | 编写 Action / Trigger |
-| [TinyGo](https://tinygo.org/getting-started/)（见 `deploy/toolchain-versions.env`） | 本地 build 校验（VPK 只上传 Go 源码） |
-| [vivarcus-sdk](docs/03-build.md) | 扫描、codegen、`vivarcus-sdk build` |
-| [vivarcus CLI](docs/01-prerequisites.md) | 部署 VPK 到 Vault |
+| [Go](https://go.dev/dl/)（见 `sdk/go.mod`） | 编写 Action / Trigger，本地 `go test` |
+| [vivarcus CLI](docs/01-prerequisites.md) | MDL、`sdk put`、把 VPK 部署到 Vault |
 
 ```bash
 git clone https://github.com/vivarcus/vivarcus-sdk.git
 cd vivarcus-sdk
 ```
 
-### 2. 推荐：端到端示例
+编码 Agent 请先读 [AGENTS.md](AGENTS.md)。
 
-从 **[examples/multi-component](examples/multi-component)** 开始——一个 module、多个 Action + Trigger、一个 combo VPK：
+### 2. 最小部署：单文件 `sdk put`
+
+从 **[examples/01-hello-action](examples/01-hello-action)** 开始：
+
+```bash
+cd examples/01-hello-action
+vivarcus sdk put -f main.go --json
+```
+
+有对象的编号示例先 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，再 `sdk put`。完整对照表见 [examples/README.md](examples/README.md)。
+
+### 3. 多文件：combo VPK（仅 multi-component）
+
+**[examples/multi-component](examples/multi-component)** 才打 VPK——一个 module、多个 Action + Trigger：
 
 ```bash
 cd examples/multi-component
-# GOTOOLCHAIN 默认读 sdk/go.mod；或 cd sdk && make build-multi-component
-GOTOOLCHAIN=go$(awk '/^go / {print $2; exit}' ../../go.mod) vivarcus-sdk build . -o action.wasm
 bash ../_shared/scripts/package-vpk.sh . action.vpk \
   --component 10:Object:sdk_demo__c:mdl/01-object.mdl
 # vivarcus package import → validate → deploy（见 docs/05-deploy.md）
 ```
 
-涵盖本地 `go.mod` + `actions/` / `triggers/` / `shared/` 布局、对象 MDL、VPK 打包（只上传 `.go`）、`import` → `validate` → `deploy`。
+涵盖本地 `go.mod` + `actions/` / `triggers/` / `shared/` 布局、对象 MDL、VPK 打包（只上传 `.go`）。平台编译 `gosdk/`，不要往包里放 wasm。不要用这套命令部署 01–09。
 
-### 3. 写 Action
+### 4. 写 Action
 
 从模板开始：
 
 ```bash
 cp templates/action/main.go.tpl my-action/main.go
 # 编辑 my-action/main.go，实现 Meta / IsExecutable / Execute
+cd my-action && go test .
 ```
+
+本地反馈优先 `go test`（mock `platform.*`），对照 [examples/02-update-field](examples/02-update-field)。
 
 分场景精读示例：
 
 | 示例 | 路径 | 说明 |
 |------|------|------|
-| Hello Action | [examples/01-hello-action](examples/01-hello-action) | 最小空操作 |
-| 更新字段 | [examples/02-update-field](examples/02-update-field) | 记录页按钮：`SetValue` + `platform.Update` |
-| 确认对话框 | [examples/03-confirm-dialog](examples/03-confirm-dialog) | `OnPreExecute` / `OnPostExecute` |
-| **系统自动执行** | [examples/04-lifecycle-entry](examples/04-lifecycle-entry) | entry / event / workflow / cancel 分步跟做 |
-| Record Trigger | [examples/05-stamp-trigger](examples/05-stamp-trigger) | 单一 Trigger 入口 |
-| Job Processor | [examples/07-job-processor](examples/07-job-processor) | Init / Process 批处理 |
-| Custom Web API | [examples/08-hello-webapi](examples/08-hello-webapi) | `POST /api/{version}/custom/...` |
-| Record Workflow Action | [examples/09-record-workflow-action](examples/09-record-workflow-action) | Start 步骤 GET_PARTICIPANTS |
-
-### 4. 构建
-
-```bash
-vivarcus-sdk build ./my-action
-vivarcus-sdk describe ./my-action/action.wasm   # Recordaction 名由 go.mod + 类型名派生
-```
+| Hello Action | [examples/01-hello-action](examples/01-hello-action) | 最小空操作（`sdk put`） |
+| 更新字段 | [examples/02-update-field](examples/02-update-field) | 记录页按钮（`sdk put`） |
+| 确认对话框 | [examples/03-confirm-dialog](examples/03-confirm-dialog) | `OnPreExecute` / `OnPostExecute`（`sdk put`） |
+| **系统自动执行** | [examples/04-lifecycle-entry](examples/04-lifecycle-entry) | entry / event / workflow / cancel（`sdk put` + MDL） |
+| Record Trigger | [examples/05-stamp-trigger](examples/05-stamp-trigger) | 单一 Trigger（`sdk put`） |
+| Job Processor | [examples/07-job-processor](examples/07-job-processor) | Init / Process（`sdk put`） |
+| Custom Web API | [examples/08-hello-webapi](examples/08-hello-webapi) | Custom Web API（`sdk put`） |
+| Record Workflow Action | [examples/09-record-workflow-action](examples/09-record-workflow-action) | GET_PARTICIPANTS（`sdk put`） |
 
 ### 5. 准备 Vault 元数据（MDL）
 
@@ -70,18 +77,22 @@ vivarcus-sdk describe ./my-action/action.wasm   # Recordaction 名由 go.mod + �
 
 ```bash
 # 见 templates/mdl/README.md
-vivarcus mdl run templates/mdl/01-object.mdl
+vivarcus component apply-mdl --confirm -f templates/mdl/01-object.mdl
 ```
 
-### 6. 打包并部署 VPK
+多文件才把对象 MDL 放进 combo VPK（见 multi-component）。
 
-见 [multi-component](examples/multi-component) 或 [docs/05-deploy.md](docs/05-deploy.md)。VPK `gosdk/` 只放 Go 源码，可含多个 Action/Trigger/Job Processor。
+### 6. 部署
+
+- **一个 `.go`**：`vivarcus sdk put -f main.go --json`（见 [05-deploy](docs/05-deploy.md) 与 [01-hello-action](examples/01-hello-action)）。
+- **多文件树**：仅 [multi-component](examples/multi-component) 打 VPK。`gosdk/` 只放 `.go`，编译在 Vault 上完成。
 
 ### 7. 验证
 
 - 按钮：记录详情 **All Actions**
 - Trigger：创建记录时自动执行（multi-component demo 会 API 验收）
 - Job Processor：Admin > Operations 调度 SDK Job
+- Agent：`vivarcus sdk get <FQN> -o /tmp/src.go --json`；编号示例部署用 `vivarcus sdk put -f main.go --json`；启停见 [05-deploy](docs/05-deploy.md)
 
 ## 文档
 
@@ -89,9 +100,9 @@ vivarcus mdl run templates/mdl/01-object.mdl
 |------|------|
 | [01-prerequisites](docs/01-prerequisites.md) | 环境、权限、CLI 配置 |
 | [02-record-action](docs/02-record-action.md) | API：Meta、Execute、可选钩子 |
-| [03-build](docs/03-build.md) | `vivarcus-sdk build`、manifest 字段 |
+| [03-build](docs/03-build.md) | 模块布局与平台如何编译 |
 | [04-package-vpk](docs/04-package-vpk.md) | VPK 目录结构与 `vaultpackage.xml` |
-| [05-deploy](docs/05-deploy.md) | import → validate → deploy |
+| [05-deploy](docs/05-deploy.md) | 01–09：`sdk put`；multi-component：import → validate → deploy |
 | [06-lifecycle](docs/06-lifecycle.md) | entry / workflow / 按钮：Usages 与两种 rule 挂法 |
 | [07-limits](docs/07-limits.md) | 标准库边界、配额、Phase 1 能力 |
 | [08-job-processor](docs/08-job-processor.md) | Job Processor：Meta / Init / Process |
@@ -107,7 +118,7 @@ vivarcus mdl run templates/mdl/01-object.mdl
 | `webapi` | Custom Web API 接口与上下文 |
 | `workflowaction` | Record Workflow Action 接口与上下文 |
 | `platform` | 宿主能力：`Get` / `Update` / `Log` |
-| `wire` | ABI 编解码（一般由 codegen 使用） |
+| `wire` | ABI 编解码（一般由平台 codegen 使用） |
 
 ```go
 import (

@@ -1,8 +1,10 @@
 # 打包 VPK
 
-客户 Record Action 通过 **Inbound VPK** 部署。结构：**可选 `components/` MDL 步** + 末尾 **`gosdk/`**（仅 `.go`）。
+**编号示例（01–09）不要走本文。** 它们用 `vivarcus sdk put -f main.go`，见 [05-deploy](05-deploy.md)。本文只给 [multi-component](../examples/multi-component) 这类多文件树。
 
-本地 `go.mod` 只给 `go get` / `vivarcus-sdk build` 用，**不要**放进 VPK。客户 module path 写在 `vaultpackage.xml` 的 `<gosdk><module>`；平台编译时按当前镜像生成 `go.mod` 并注入 SDK。
+客户多入口 Record Action 通过 **Inbound VPK** 部署。结构：**可选 `components/` MDL 步** + 末尾 **`gosdk/`**（仅 `.go`）。
+
+本地 `go.mod` 只给 `go get` / `go test` 用，**不要**放进 VPK。客户 module path 写在 `vaultpackage.xml` 的 `<gosdk><module>`；平台编译时按当前镜像生成 `go.mod` 并注入 SDK。`package-vpk.sh` 会跳过 `*_test.go` 与 `zz_generated_reactor.go`。
 
 ## 目录结构
 

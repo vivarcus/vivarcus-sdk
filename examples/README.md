@@ -1,18 +1,25 @@
 # SDK examples
 
-| 目录 | 场景 | 本地 build |
-|------|------|------------|
-| **[multi-component](multi-component)** | **推荐**：多 Action/Trigger + `actions/`/`triggers/`/`shared/`，一个 VPK | `cd multi-component && vivarcus-sdk build .` |
-| [01-hello-action](01-hello-action) | 工具链 | `cd 01-hello-action && vivarcus-sdk build . --skip-compile` |
-| [02-update-field](02-update-field) | 记录页按钮 | `cd 02-update-field && vivarcus-sdk build .` |
-| [03-confirm-dialog](03-confirm-dialog) | 确认框 + 横幅 | `cd 03-confirm-dialog && vivarcus-sdk build .` |
-| [04-lifecycle-entry](04-lifecycle-entry) | entry / event / workflow / cancel | `cd 04-lifecycle-entry && vivarcus-sdk build .` |
-| [05-stamp-trigger](05-stamp-trigger) | Record Trigger | `cd 05-stamp-trigger && vivarcus-sdk build .` |
-| [06-query-field](06-query-field) | 记录页按钮 + 只读 VQL | `cd 06-query-field && vivarcus-sdk build .` |
-| [07-job-processor](07-job-processor) | Job Processor | `cd 07-job-processor && vivarcus-sdk build .` |
-| [08-hello-webapi](08-hello-webapi) | Custom Web API | `cd 08-hello-webapi && vivarcus-sdk build .` |
-| [09-record-workflow-action](09-record-workflow-action) | Record Workflow Action | `cd 09-record-workflow-action && vivarcus-sdk build .` |
+两种部署，不要混用：
 
-打包 VPK、import / validate / deploy 见 [docs/04-package-vpk.md](../docs/04-package-vpk.md) 与 [docs/05-deploy.md](../docs/05-deploy.md)。
+| 示例 | 怎么部署 |
+|------|----------|
+| **[multi-component](multi-component)** | **唯一走 VPK**：`package-vpk.sh` → `import` → `validate` → `deploy` |
+| **[01](01-hello-action)–[09](09-record-workflow-action)** | **单文件**：对象/配置用 `vivarcus component apply-mdl`，Go 用 `vivarcus sdk put -f main.go` |
 
-脚本：[`_shared/scripts/package-vpk.sh`](_shared/scripts/package-vpk.sh)
+编号示例都是一个 `main.go` 入口；`sdk put` 把该文件 merge 进 vault 树并整树重编译。本地 `go test` 见 [02-update-field](02-update-field)。模块布局见 [docs/03-build.md](../docs/03-build.md)。
+
+| 目录 | 场景 |
+|------|------|
+| **[multi-component](multi-component)** | 多 Action/Trigger + `actions/`/`triggers/`/`shared/`，**combo VPK** |
+| [01-hello-action](01-hello-action) | 最小空操作（`sdk put`） |
+| [02-update-field](02-update-field) | 记录页按钮 + `go test`（`sdk put`） |
+| [03-confirm-dialog](03-confirm-dialog) | 确认框 + 横幅（`sdk put`） |
+| [04-lifecycle-entry](04-lifecycle-entry) | entry / event / workflow / cancel（`sdk put` + 生命周期 MDL） |
+| [05-stamp-trigger](05-stamp-trigger) | Record Trigger（`sdk put`） |
+| [06-query-field](06-query-field) | 记录页按钮 + 只读 VQL（`sdk put`） |
+| [07-job-processor](07-job-processor) | Job Processor（`sdk put`） |
+| [08-hello-webapi](08-hello-webapi) | Custom Web API（`sdk put`） |
+| [09-record-workflow-action](09-record-workflow-action) | Record Workflow Action（`sdk put`） |
+
+VPK 细节：[04-package-vpk](../docs/04-package-vpk.md)、[05-deploy](../docs/05-deploy.md)。脚本仅 multi-component 需要：[`_shared/scripts/package-vpk.sh`](_shared/scripts/package-vpk.sh)

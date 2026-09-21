@@ -40,7 +40,7 @@ type RecordAction interface {
 
 ## 可选方法
 
-实现以下方法时，`vivarcus-sdk build` 会自动导出对应 wasm 钩子：
+实现以下方法时，平台编译会导出对应 wasm 钩子：
 
 ```go
 // 执行前确认对话框（仅 UserAction）
@@ -76,6 +76,6 @@ rec.SetValue("title__c", "new value")
 
 - 包 `com.acme.actions`，类型 `Approve` → `com.acme.actions.Approve`
 
-`vivarcus-sdk build` 在 manifest 中生成默认值，部署前请改为正式 FQN。
+FQN 由本地 `go.mod` 的 `module` 路径 + Go 类型名派生（写入 `vaultpackage.xml` `<gosdk><module>`）。需要固定名字时在 `Meta.Name` 写出。
 
-下一步：[03-build](03-build.md)
+下一步：单个 `.go` 用 [05-deploy](05-deploy.md) 的 `sdk put`；多文件才 [04-package-vpk](04-package-vpk.md)（模块布局：[03-build](03-build.md)）

@@ -1,5 +1,5 @@
 -- 片段：event_action rule 里引用 Recordaction.<FQN>。
--- 将 {{ACTION_FQN}} 换成 `vivarcus-sdk describe` 输出的 component_name（如 com.example.StampOnEnter）。
+-- 将 {{ACTION_FQN}} 换成 go.mod module + Go 类型名派生的 Recordaction FQN（如 acme.corp.lifecycle.StampOnEnter）。
 --
 -- 在 Vault 生命周期配置 → Event Actions 中：
 --   event = create_record（或其它平台事件名）

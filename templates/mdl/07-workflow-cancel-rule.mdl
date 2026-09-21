@@ -1,5 +1,5 @@
 -- 片段：Workflow Cancelation Action rule 里引用 Recordaction.<FQN>。
--- 将 {{ACTION_FQN}} 换成 `vivarcus-sdk describe` 输出的 component_name。
+-- 将 {{ACTION_FQN}} 换成 go.mod module + Go 类型名派生的 Recordaction FQN。
 --
 -- 在 Objectworkflow 的 Cancelation Actions 配置中粘贴：
 --
