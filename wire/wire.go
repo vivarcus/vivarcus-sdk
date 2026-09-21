@@ -66,11 +66,149 @@ type TriggerMeta struct {
 	RunAs         string   `json:"run_as,omitempty"`
 }
 
+// JobMeta is one Job Processor's metadata inside a Describe payload.
+type JobMeta struct {
+	ComponentName     string `json:"component_name,omitempty"`
+	Label             string `json:"label"`
+	Idempotent        bool   `json:"idempotent,omitempty"`
+	Visible           bool   `json:"visible,omitempty"`
+	AdminConfigurable bool   `json:"admin_configurable,omitempty"`
+	AdminCancellable  bool   `json:"admin_cancellable,omitempty"`
+}
+
+// WebApiMeta is one Custom Web API's metadata inside a Describe payload.
+type WebApiMeta struct {
+	ComponentName  string `json:"component_name,omitempty"`
+	Label          string `json:"label"`
+	EndpointName   string `json:"endpoint_name,omitempty"`
+	MinimumVersion string `json:"minimum_version,omitempty"`
+	APIGroup       string `json:"api_group,omitempty"`
+	RunAs          string `json:"run_as,omitempty"`
+}
+
+// WorkflowActionMeta is one Record Workflow Action's metadata inside a Describe payload.
+type WorkflowActionMeta struct {
+	ComponentName string   `json:"component_name,omitempty"`
+	Label         string   `json:"label"`
+	Object        string   `json:"object,omitempty"`
+	StepTypes     []string `json:"step_types,omitempty"`
+	RunAs         string   `json:"run_as,omitempty"`
+}
+
 // Describe is the payload returned by __sdk_describe (one wasm, many entries).
 type Describe struct {
-	APIVersion string        `json:"api_version"`
-	Actions    []Meta        `json:"actions,omitempty"`
-	Triggers   []TriggerMeta `json:"triggers,omitempty"`
+	APIVersion      string               `json:"api_version"`
+	Actions         []Meta               `json:"actions,omitempty"`
+	Triggers        []TriggerMeta        `json:"triggers,omitempty"`
+	Jobs            []JobMeta            `json:"jobs,omitempty"`
+	WebApis         []WebApiMeta         `json:"webapis,omitempty"`
+	WorkflowActions []WorkflowActionMeta `json:"workflow_actions,omitempty"`
+}
+
+// WorkflowActionContext is the Record Workflow Action context crossing the host/guest boundary.
+type WorkflowActionContext struct {
+	Action                string               `json:"action,omitempty"`
+	Event                 string               `json:"event,omitempty"`
+	VaultID               string               `json:"vault_id,omitempty"`
+	WorkflowInstanceID    string               `json:"workflow_instance_id,omitempty"`
+	WorkflowAPIName       string               `json:"workflow_api_name,omitempty"`
+	WorkflowLabel         string               `json:"workflow_label,omitempty"`
+	ObjectAPIName         string               `json:"object_api_name,omitempty"`
+	RecordIDs             []string             `json:"record_ids,omitempty"`
+	InitiatingUserID      string               `json:"initiating_user_id,omitempty"`
+	CurrentUserID         string               `json:"current_user_id,omitempty"`
+	ParticipantGroupName  string               `json:"participant_group_name,omitempty"`
+	ParticipantGroupLabel string               `json:"participant_group_label,omitempty"`
+	Participants          map[string][]string  `json:"participants,omitempty"`
+	TaskStepAPIName       string               `json:"task_step_api_name,omitempty"`
+	TaskChanges           []WorkflowTaskChange `json:"task_changes,omitempty"`
+}
+
+// WorkflowTaskChange is one old/new task pair for task-step events.
+type WorkflowTaskChange struct {
+	OldTaskID         string `json:"old_task_id,omitempty"`
+	NewTaskID         string `json:"new_task_id,omitempty"`
+	StepAPIName       string `json:"step_api_name,omitempty"`
+	OldAssigneeUserID string `json:"old_assignee_user_id,omitempty"`
+	NewAssigneeUserID string `json:"new_assignee_user_id,omitempty"`
+	OldStatus         string `json:"old_status,omitempty"`
+	NewStatus         string `json:"new_status,omitempty"`
+}
+
+// WorkflowActionResult is returned from guest execute_workflow_action.
+type WorkflowActionResult struct {
+	Error        string              `json:"error,omitempty"`
+	Participants map[string][]string `json:"participants,omitempty"`
+}
+
+// WebApiContext is the Custom Web API context crossing the host/guest boundary.
+type WebApiContext struct {
+	WebApi           string         `json:"webapi,omitempty"`
+	Endpoint         string         `json:"endpoint,omitempty"`
+	APIVersion       string         `json:"api_version,omitempty"`
+	JSON             map[string]any `json:"json,omitempty"`
+	VaultID          string         `json:"vault_id,omitempty"`
+	CurrentUserID    string         `json:"current_user_id,omitempty"`
+	InitiatingUserID string         `json:"initiating_user_id,omitempty"`
+}
+
+// WebApiError is one FAILURE envelope error from guest Execute.
+type WebApiError struct {
+	Type    string `json:"type,omitempty"`
+	Message string `json:"message,omitempty"`
+}
+
+// WebApiResult is returned from guest execute_webapi.
+type WebApiResult struct {
+	Status string         `json:"status,omitempty"`
+	Data   map[string]any `json:"data,omitempty"`
+	Errors []WebApiError  `json:"errors,omitempty"`
+	Error  string         `json:"error,omitempty"`
+}
+
+// JobItem is one JobItem crossing the host/guest boundary.
+type JobItem struct {
+	ID     string         `json:"id,omitempty"`
+	Values map[string]any `json:"values,omitempty"`
+}
+
+// JobInitContext is the Job.Init context crossing the host/guest boundary.
+type JobInitContext struct {
+	Job     string         `json:"job,omitempty"`
+	JobID   string         `json:"job_id,omitempty"`
+	JobName string         `json:"job_name,omitempty"`
+	VaultID string         `json:"vault_id,omitempty"`
+	Params  map[string]any `json:"params,omitempty"`
+}
+
+// JobInitResult is returned from guest init_job.
+type JobInitResult struct {
+	Items []JobItem `json:"items,omitempty"`
+	Error string    `json:"error,omitempty"`
+}
+
+// JobProcessContext is the Job.Process context crossing the host/guest boundary.
+type JobProcessContext struct {
+	Job     string    `json:"job,omitempty"`
+	JobID   string    `json:"job_id,omitempty"`
+	JobName string    `json:"job_name,omitempty"`
+	TaskID  string    `json:"task_id,omitempty"`
+	VaultID string    `json:"vault_id,omitempty"`
+	Items   []JobItem `json:"items,omitempty"`
+}
+
+// JobItemResult is one Process item outcome.
+type JobItemResult struct {
+	ID           string `json:"id,omitempty"`
+	Result       string `json:"result,omitempty"`
+	ErrorCode    string `json:"error_code,omitempty"`
+	ErrorMessage string `json:"error_message,omitempty"`
+}
+
+// JobProcessResult is returned from guest process_job.
+type JobProcessResult struct {
+	Results []JobItemResult `json:"results,omitempty"`
+	Error   string          `json:"error,omitempty"`
 }
 
 // TriggerContext is the Record Trigger context crossing the host/guest boundary.

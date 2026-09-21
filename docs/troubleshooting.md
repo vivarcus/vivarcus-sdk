@@ -18,8 +18,10 @@
 |------|------|
 | `requires go version 1.19 through 1.26, got go1.27` | 本机 Go 版本过新，TinyGo 暂不支持。用 `GOTOOLCHAIN=go1.26.2 vivarcus-sdk build ...`，或降级 Go；仅验证扫描/codegen 时加 `--skip-compile` |
 | `tinygo not found` | 安装 TinyGo 并加入 `PATH` |
-| `no Record Action entry type found` | 至少一个类型实现 `Meta`/`IsExecutable`/`Execute` |
-| `entry types must share one package` | 同一 module 的多个 Action 须在同一 Go package |
+| `no Record Action entry type found` | 至少一个类型实现 `Meta`/`IsExecutable`/`Execute`（可在 `actions/`、`entries/` 或模块根） |
+| `subdirectory entries must use a named package` | 子目录入口不能 `package main`，改为 `package actions` 等 |
+| `must not live in shared/` | `shared/` 只放 helper；把 `Meta()` 入口移到 `actions/` / `triggers/` / `entries/` 或模块根 |
+| `duplicate ... type name` | 同一 module 内类型名须唯一；或用 `Meta.Name` 钉 FQN |
 | `imports forbidden package` | 移除 `os`/`net` 等禁止包 |
 | `module exceeds 2MB` | 精简代码或依赖 |
 
@@ -30,10 +32,11 @@
 | `gosdk_invalid` + 2mb / size | wasm ≤ 2 MB；重新 `vivarcus-sdk build` |
 | `gosdk_invalid` + api_version | `__sdk_describe` 须返回 `api_version`=`1` |
 | `gosdk_invalid` + import / whitelist | wasm 含非法 import；勿手写 wasm，用 `vivarcus-sdk build` |
-| `gosdk_invalid` + describe / missing | wasm 须导出 `__sdk_describe` 且列出至少一条 Action |
+| `gosdk_invalid` + go.mod / go.sum | VPK `gosdk/` 只放 `.go`；`module` 写在 `vaultpackage.xml` |
+| `gosdk_invalid` + module path / `com.example` | `<gosdk><module>` 必填且不能是静默示例前缀 |
 
 ```bash
-本地可用 `vivarcus-sdk build` 验证；VPK `gosdk/` 只放 Go 源码，不要放 `.wasm`
+本地可用 `vivarcus-sdk build` 验证；VPK `gosdk/` 只放 `.go`，不要放 `.wasm` 或 `go.mod`
 ```
 
 ## 部署成功但按钮不出现

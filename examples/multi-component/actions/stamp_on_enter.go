@@ -1,9 +1,9 @@
-package main
+package actions
 
 import (
+	"github.com/acme.corp.sdkdemo/shared"
 	"github.com/vivarcus/vivarcus-sdk/action"
 	"github.com/vivarcus/vivarcus-sdk/platform"
-	"github.com/acme.corp.sdkdemo/shared"
 )
 
 // StampOnEnter runs when a record enters in_review__c (lifecycle entry_action rule).

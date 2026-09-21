@@ -102,7 +102,7 @@ resolve_sdk_module_ref() {
 	printf 'main\n'
 }
 
-# Prints the require line version for customer gosdk/go.mod (Go semver tag).
+# Prints the Go module tag for local go.mod / go get (not packed into VPK).
 resolve_sdk_module_version() {
 	local repo_root="${1:-}"
 	local ref go_tag resolved

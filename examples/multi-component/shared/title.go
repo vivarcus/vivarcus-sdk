@@ -1,4 +1,4 @@
-// Package shared holds cross-entry helpers (ADR-22 User-Defined Class pattern).
+// Package shared holds cross-entry helpers (ADR-22: each .go is an Sdkcode component).
 // Not a schedulable entry — Record Action / Trigger import it at compile time.
 package shared
 

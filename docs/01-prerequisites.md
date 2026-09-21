@@ -43,7 +43,7 @@ VERSION=v26R3.3-13316 curl -fsSL https://raw.githubusercontent.com/vivarcus/viva
 
 映射：`26R3.3` + assembly `13316` → `v1.26.3-3.13316`（Go module major 固定为 `v1.`，ADCV 编在 minor/patch/pre-release 里）。
 
-本地 clone 开发：`require v1.26.3-3.13317`（Go module tag，对齐当前 train）+ `replace => ../..`；打 VPK 时 `package-vpk.sh` 会按目标 Vault 重写版本并去掉 `replace`。
+本地 clone 开发：`require v1.26.3-3.13317`（Go module tag，对齐当前 train）+ `replace => ../..`。打 VPK 时 `package-vpk.sh` **不**打包 `go.mod`；只把 `module` 行写入 `vaultpackage.xml`。平台编译始终用 Vault 镜像内的 SDK。
 
 若暂无 Release，请联系 Vivarcus 支持获取对应版本的构建工具。
 

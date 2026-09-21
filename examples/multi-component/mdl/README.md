@@ -8,4 +8,4 @@
 
 Recordtrigger / Recordaction 由 gosdk VPK deploy 从组件清单投影，不必手写进本目录。`{{ACTION_FQN}}` 在跑 demo 时由 `vivarcus-sdk describe` 填入 `StampOnEnter` 的 FQN。
 
-与 [Go 入口](../action_set_title.go) 里 `Meta.Object`（`sdk_demo__c`）对齐。
+与 [Go 入口](../actions/set_title.go) 里 `Meta.Object`（`sdk_demo__c`）对齐。

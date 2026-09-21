@@ -4,7 +4,7 @@
 
 ## 仓库定位
 
-- **目标**：帮助开发者在 Vivarcus Vault 上实现 **Record Action**（记录页自定义按钮）。
+- **目标**：帮助开发者在 Vivarcus Vault 上实现 **Record Action**、**Record Trigger**、**Job Processor**、**Custom Web API** 与 **Record Workflow Action**。
 - **语言**：Go → TinyGo → WebAssembly（**不是 Java**）。
 - **部署路径**：`gosdk/` Inbound VPK → `vivarcus package import/validate/deploy`。
 - **默认状态**：客户 Action 部署后 **active**，记录页按钮 deploy 完成即可见。
@@ -14,6 +14,8 @@
 | 用户意图 | 先读 | 再执行 |
 |----------|------|--------|
 | 新建 Record Action | `templates/action/main.go.tpl` | 实现接口 → `vivarcus-sdk build` |
+| 新建 Job Processor | `templates/job/main.go.tpl` | 实现 Meta/Init/Process → `vivarcus-sdk build` |
+| 新建 Record Workflow Action | `templates/workflowaction/main.go.tpl` | 实现 Meta/Execute → `vivarcus-sdk build` |
 | 按钮改字段 | `examples/02-update-field/` | 对齐 `Meta.Object` 与 MDL 对象 api_name |
 | 执行前确认框 | `examples/03-confirm-dialog/` | 实现 `OnPreExecute` |
 | 记录页按钮（端到端） | `examples/multi-component/` | MDL + VPK + deploy |
@@ -34,8 +36,7 @@
 4. **构建**：`vivarcus-sdk build <dir> -o action.wasm` 成功。
 5. **VPK 结构**：
    ```
-   vaultpackage.xml
-   gosdk/go.mod
+   vaultpackage.xml          # <gosdk><module> 来自本地 go.mod
    gosdk/main.go
    ```
 6. **部署**：`vivarcus package validate` 通过（`deployment_status` 非 `not_verified__v`），`deploy --confirm` 创建 active Recordaction / Objectaction / Recordtrigger。
@@ -78,6 +79,15 @@ func (T) Meta() action.Meta
 func (T) IsExecutable(ctx action.RecordActionContext) bool
 func (T) Execute(ctx action.RecordActionContext) (action.ExecuteResult, error)
 
+// Job Processor
+func (T) Meta() job.Meta
+func (T) Init(ctx job.InitContext) (job.Input, error)
+func (T) Process(ctx job.ProcessContext) (job.ProcessResult, error)
+
+// Record Workflow Action
+func (T) Meta() workflowaction.Meta
+func (T) Execute(ctx workflowaction.RecordWorkflowActionContext) error
+
 // 可选（实现即导出 wasm 钩子）
 func (T) OnPreExecute(ctx action.RecordActionContext) (action.PreExecuteResult, error)
 func (T) OnPostExecute(ctx action.RecordActionContext) (action.PostExecuteResult, error)
@@ -99,6 +109,10 @@ rec.SetValue(field, value) // Execute 内暂存，配合 platform.Update 持久�
 | `examples/02-update-field` | 读写记录字段（UserAction 按钮） |
 | `examples/03-confirm-dialog` | 确认框 + 结果横幅 |
 | `examples/04-lifecycle-entry` | entry / event / workflow step / cancel（Step 4–8 + MDL 模板 04–07） |
+| `examples/05-stamp-trigger` | Record Trigger |
+| `examples/07-job-processor` | Job Processor（Init / Process） |
+| `examples/08-hello-webapi` | Custom Web API |
+| `examples/09-record-workflow-action` | Record Workflow Action（Start / GET_PARTICIPANTS） |
 | `examples/multi-component` | **推荐**：多 Action/Trigger + MDL + VPK 一条龙 |
 
 ## 反馈

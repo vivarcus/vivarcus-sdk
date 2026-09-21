@@ -1,8 +1,8 @@
 # Vivarcus SDK
 
-在 Vivarcus Vault 上开发 **Record Action**（记录页自定义按钮）与 **Record Trigger** 的 Go 开发套件。通过 Inbound VPK 部署，deploy 后在 Vault 中可见。
+在 Vivarcus Vault 上开发 **Record Action**（记录页自定义按钮）、**Record Trigger**、**Job Processor**、**Custom Web API** 与 **Record Workflow Action** 的 Go 开发套件。通过 Inbound VPK 部署，deploy 后在 Vault 中可见。
 
-> 对标 Veeva Vault Java SDK 的 `RecordAction` / `RecordTrigger`；Phase 1 使用 **Go**，`javasdk/` 暂不支持。
+> 对标 Veeva Vault Java SDK 的 `RecordAction` / `RecordTrigger` / `Job` / `WebApi` / `RecordWorkflowAction`；使用 **Go**，`javasdk/` 暂不支持。
 
 ## 5 分钟 Quickstart
 
@@ -33,7 +33,7 @@ bash ../_shared/scripts/package-vpk.sh . action.vpk \
 # vivarcus package import → validate → deploy（见 docs/05-deploy.md）
 ```
 
-涵盖 `go.mod` + `shared/` 布局、对象 MDL、VPK 打包、`import` → `validate` → `deploy`。
+涵盖本地 `go.mod` + `actions/` / `triggers/` / `shared/` 布局、对象 MDL、VPK 打包（只上传 `.go`）、`import` → `validate` → `deploy`。
 
 ### 3. 写 Action
 
@@ -53,6 +53,9 @@ cp templates/action/main.go.tpl my-action/main.go
 | 确认对话框 | [examples/03-confirm-dialog](examples/03-confirm-dialog) | `OnPreExecute` / `OnPostExecute` |
 | **系统自动执行** | [examples/04-lifecycle-entry](examples/04-lifecycle-entry) | entry / event / workflow / cancel 分步跟做 |
 | Record Trigger | [examples/05-stamp-trigger](examples/05-stamp-trigger) | 单一 Trigger 入口 |
+| Job Processor | [examples/07-job-processor](examples/07-job-processor) | Init / Process 批处理 |
+| Custom Web API | [examples/08-hello-webapi](examples/08-hello-webapi) | `POST /api/{version}/custom/...` |
+| Record Workflow Action | [examples/09-record-workflow-action](examples/09-record-workflow-action) | Start 步骤 GET_PARTICIPANTS |
 
 ### 4. 构建
 
@@ -72,12 +75,13 @@ vivarcus mdl run templates/mdl/01-object.mdl
 
 ### 6. 打包并部署 VPK
 
-见 [multi-component](examples/multi-component) 或 [docs/05-deploy.md](docs/05-deploy.md)。VPK `gosdk/` 只放 Go 源码，可含多个 Action/Trigger。
+见 [multi-component](examples/multi-component) 或 [docs/05-deploy.md](docs/05-deploy.md)。VPK `gosdk/` 只放 Go 源码，可含多个 Action/Trigger/Job Processor。
 
 ### 7. 验证
 
 - 按钮：记录详情 **All Actions**
 - Trigger：创建记录时自动执行（multi-component demo 会 API 验收）
+- Job Processor：Admin > Operations 调度 SDK Job
 
 ## 文档
 
@@ -90,6 +94,7 @@ vivarcus mdl run templates/mdl/01-object.mdl
 | [05-deploy](docs/05-deploy.md) | import → validate → deploy |
 | [06-lifecycle](docs/06-lifecycle.md) | entry / workflow / 按钮：Usages 与两种 rule 挂法 |
 | [07-limits](docs/07-limits.md) | 标准库边界、配额、Phase 1 能力 |
+| [08-job-processor](docs/08-job-processor.md) | Job Processor：Meta / Init / Process |
 | [troubleshooting](docs/troubleshooting.md) | 常见错误 |
 
 ## Go API 包
@@ -98,6 +103,9 @@ vivarcus mdl run templates/mdl/01-object.mdl
 |----|------|
 | `action` | Record Action 接口与上下文 |
 | `trigger` | Record Trigger 接口与上下文 |
+| `job` | Job Processor 接口与上下文 |
+| `webapi` | Custom Web API 接口与上下文 |
+| `workflowaction` | Record Workflow Action 接口与上下文 |
 | `platform` | 宿主能力：`Get` / `Update` / `Log` |
 | `wire` | ABI 编解码（一般由 codegen 使用） |
 

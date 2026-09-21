@@ -30,8 +30,8 @@
 
 | 能力 | 状态 |
 |------|------|
-| `platform.Get` | 仅当前上下文记录 |
-| `platform.Update` | 仅当前上下文记录；未知字段 / 保留键拒绝；单次字段数与单值体积有上限 |
+| `platform.Get` | Action：仅当前上下文记录。Job Processor：任意记录 |
+| `platform.Update` | Action：仅当前上下文记录。Job Processor：任意记录；未知字段 / 保留键拒绝；单次字段数与单值体积有上限 |
 | `platform.LogInfo` 等 | 支持 |
 | `platform.Create` / `Delete` | 视宿主实现，可能 NOT_IMPLEMENTED |
 | `platform.Query`（只读 VQL） | 支持；`PAGESIZE` 上限 200；不支持 `PAGESIZE 0`（纯 count）、`PAGEOFFSET`、分页游标 |
@@ -52,7 +52,11 @@
 
 ## Record Trigger
 
-规格见平台文档；**Phase 1 运行时未实现** Trigger 客户 wasm 路径。仅 Record Action 可端到端部署。
+规格见平台文档。客户 wasm Trigger 与 Action 可同 VPK 部署。
+
+## Job Processor
+
+规格见 [08-job-processor](08-job-processor.md)。客户 `Sdkjob` 经 gosdk VPK 部署后，由 Job Definition 类型 **SDK Job** 调度。
 
 ## 错误码（用户可见）
 

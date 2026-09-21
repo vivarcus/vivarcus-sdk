@@ -1,8 +1,8 @@
-package main
+package triggers
 
 import (
-	"github.com/vivarcus/vivarcus-sdk/trigger"
 	"github.com/acme.corp.sdkdemo/shared"
+	"github.com/vivarcus/vivarcus-sdk/trigger"
 )
 
 // StampName runs BEFORE_INSERT and stamps name__v.
