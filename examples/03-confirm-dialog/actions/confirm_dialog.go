@@ -1,4 +1,4 @@
-package main
+package actions
 
 import (
 	"github.com/vivarcus/vivarcus-sdk/action"
@@ -43,4 +43,3 @@ func (ConfirmDialog) OnPostExecute(ctx action.RecordActionContext) (action.PostE
 	}, nil
 }
 
-func main() {}

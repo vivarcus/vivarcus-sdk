@@ -1,4 +1,4 @@
-package main
+package actions
 
 import (
 	"github.com/vivarcus/vivarcus-sdk/action"
@@ -41,4 +41,3 @@ func (StampOnEnter) Execute(ctx action.RecordActionContext) (action.ExecuteResul
 	return action.ExecuteResult{}, nil
 }
 
-func main() {}

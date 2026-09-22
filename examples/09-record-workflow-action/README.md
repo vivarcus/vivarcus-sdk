@@ -4,8 +4,6 @@
 
 对标 Veeva Java SDK `com.veeva.vault.sdk.api.workflow.RecordWorkflowAction`（`@RecordWorkflowActionInfo` + `execute`）。这不是记录页按钮（`Recordaction`），也不是对象工作流 XML 里的系统 Workflow Action 步骤（见 [04-lifecycle-entry](../04-lifecycle-entry)）。
 
-**不要打 VPK。** 多文件 combo 见 [multi-component](../multi-component)。
-
 部署后在对象工作流 Start 步骤的 Participant Control 上引用：
 
 ```xml
@@ -16,7 +14,7 @@
 
 ```bash
 cd examples/09-record-workflow-action
-vivarcus sdk put -f main.go --json
+vivarcus sdk put -f workflowactions/capture_participants.go --json
 ```
 
 FQN：`acme.corp.recordworkflowaction.CaptureParticipants`。对象工作流须已存在，并在 Start 步骤挂上上面的引用。

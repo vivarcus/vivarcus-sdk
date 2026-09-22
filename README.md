@@ -28,7 +28,7 @@ cd vivarcus-sdk
 
 ```bash
 cd examples/01-hello-action
-vivarcus sdk put -f main.go --json
+vivarcus sdk put -f actions/noop_action.go --json
 ```
 
 有对象的编号示例先 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，再 `sdk put`。完整对照表见 [examples/README.md](examples/README.md)。
@@ -51,9 +51,10 @@ bash ../_shared/scripts/package-vpk.sh . action.vpk \
 从模板开始：
 
 ```bash
-cp templates/action/main.go.tpl my-action/main.go
-# 编辑 my-action/main.go，实现 Meta / IsExecutable / Execute
-cd my-action && go test .
+mkdir -p my-action/actions
+cp templates/action/action.go.tpl my-action/actions/set_title.go
+# 编辑 my-action/actions/set_title.go，实现 Meta / IsExecutable / Execute。包名是 package actions。
+cd my-action && go test ./...
 ```
 
 本地反馈优先 `go test`（mock `platform.*`），对照 [examples/02-update-field](examples/02-update-field)。
@@ -84,7 +85,7 @@ vivarcus component apply-mdl --confirm -f templates/mdl/01-object.mdl
 
 ### 6. 部署
 
-- **一个 `.go`**：`vivarcus sdk put -f main.go --json`（见 [05-deploy](docs/05-deploy.md) 与 [01-hello-action](examples/01-hello-action)）。
+- **一个 `.go`**：`vivarcus sdk put -f actions/noop_action.go --json`（见 [05-deploy](docs/05-deploy.md) 与 [01-hello-action](examples/01-hello-action)）。
 - **多文件树**：仅 [multi-component](examples/multi-component) 打 VPK。`gosdk/` 只放 `.go`，编译在 Vault 上完成。
 
 ### 7. 验证
@@ -92,7 +93,7 @@ vivarcus component apply-mdl --confirm -f templates/mdl/01-object.mdl
 - 按钮：记录详情 **All Actions**
 - Trigger：创建记录时自动执行（multi-component demo 会 API 验收）
 - Job Processor：Admin > Operations 调度 SDK Job
-- Agent：`vivarcus sdk get <FQN> -o /tmp/src.go --json`；编号示例部署用 `vivarcus sdk put -f main.go --json`；启停见 [05-deploy](docs/05-deploy.md)
+- Agent：`vivarcus sdk get <FQN> -o /tmp/src.go --json`；编号示例部署用 `vivarcus sdk put -f <子目录>/<类型名>.go --json`；启停见 [05-deploy](docs/05-deploy.md)
 
 ## 文档
 

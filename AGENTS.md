@@ -7,15 +7,15 @@
 - **目标**：帮助开发者在 Vivarcus Vault 上实现 **Record Action**、**Record Trigger**、**Job Processor**、**Custom Web API** 与 **Record Workflow Action**。
 - **语言**：Go（**不是 Java**）。平台把客户 `.go` 编成 wasm。
 - **部署路径**：
-  - **编号示例 01–09**：`vivarcus sdk put -f main.go`（有对象则先 `component apply-mdl`）。
+  - **编号示例 01–09**：`vivarcus sdk put -f <子目录>/<类型名>.go`（有对象则先 `component apply-mdl`）。入口在命名子目录，例如 `actions/set_title.go`（`package actions`）。
   - **仅 [multi-component](examples/multi-component)**：`package-vpk.sh` → `vivarcus package import/validate/deploy`。
 - **默认状态**：客户入口部署后 **active**，记录页按钮完成后即可见。
 
 ## 默认循环（先做这个）
 
 1. 对照模板实现接口；`Meta` 与对象 / 按钮 api_name 对齐。
-2. `go test`：直接调 `Execute` / `Process`，mock `platform.*` 的 `*Func`（见 [examples/02-update-field/main_test.go](examples/02-update-field/main_test.go)）。`*_test.go` **不**部署。
-3. 编号示例：需要对象时 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，然后 `vivarcus sdk put -f main.go --json`。
+2. `go test ./...`：直接调 `Execute` / `Process`，mock `platform.*` 的 `*Func`（见 [examples/02-update-field/actions/set_title_test.go](examples/02-update-field/actions/set_title_test.go)）。`*_test.go` **不**部署。
+3. 编号示例：需要对象时 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，然后 `vivarcus sdk put -f actions/set_title.go --json`（路径按示例子目录）。
 4. 多文件树才打 VPK：只做 [examples/multi-component](examples/multi-component)。编译失败时读 `gosdk_invalid` 改源码再 `put` 或 re-deploy。
 5. 在 Vault 验证按钮 / Trigger / Job / Web API。
 
@@ -25,9 +25,9 @@
 
 | 用户意图 | 先读 | 再执行 |
 |----------|------|--------|
-| 新建 Record Action | `templates/action/main.go.tpl` | 实现接口 → `go test` → `sdk put -f main.go` |
-| 新建 Job Processor | `templates/job/main.go.tpl` | 实现 Meta/Init/Process → `go test` → `sdk put` |
-| 新建 Record Workflow Action | `templates/workflowaction/main.go.tpl` | 实现 Meta/Execute → `go test` → `sdk put` |
+| 新建 Record Action | `templates/action/action.go.tpl` | 实现接口 → `go test ./...` → `sdk put -f actions/<类型名>.go` |
+| 新建 Job Processor | `templates/job/job.go.tpl` | 实现 Meta/Init/Process → `go test` → `sdk put` |
+| 新建 Record Workflow Action | `templates/workflowaction/workflow_action.go.tpl` | 实现 Meta/Execute → `go test` → `sdk put` |
 | 按钮改字段 | `examples/02-update-field/` | `apply-mdl` + `sdk put`；对齐 `Meta.Object` |
 | 执行前确认框 | `examples/03-confirm-dialog/` | `apply-mdl` + `sdk put`；实现 `OnPreExecute` |
 | 记录页按钮（多文件端到端） | `examples/multi-component/` | **仅此示例打 VPK** |
@@ -47,7 +47,7 @@
 2. **Action 代码**：实现 `Meta()`、`IsExecutable()`、`Execute()`；同一 module 可有多个类型；可选 `OnPreExecute`/`OnPostExecute`。
 3. **Meta 对齐**：`Meta.Object` / `Meta.ObjectAction` / `Meta.Label` 与 Vault 对象和按钮 api_name 一致；FQN 由 module+类型名派生（或 `Meta.Name`）。
 4. **本地**：`go test` 覆盖主路径；不要 import `os`/`net`/`unsafe` 等（见 `docs/07-limits.md`）。
-5. **部署（编号示例）**：`vivarcus sdk put -f main.go --json`。有对象先 `component apply-mdl`。不要 `package-vpk.sh`。
+5. **部署（编号示例）**：`vivarcus sdk put -f <子目录>/<类型名>.go --json`。有对象先 `component apply-mdl`。不要 `package-vpk.sh`。
 6. **部署（仅 multi-component）**：`package-vpk.sh` → `validate` → `deploy --confirm`。
 7. **验证**：
    - 按钮：记录详情 **All Actions**

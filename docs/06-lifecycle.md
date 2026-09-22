@@ -15,7 +15,7 @@ SDK Record Action 可挂在 **记录页按钮**、**进状态（entry）**、**�
 | **Workflow Action 步骤** | `WorkflowStep` | step_detail rule | [04 Step 6](../examples/04-lifecycle-entry) |
 | **Workflow 取消** | `WorkflowCancel` | cancelation rule | [04 Step 8](../examples/04-lifecycle-entry) |
 
-同一 wasm 可在 `Usages` 里声明多个系统场景（`UserBulkAction` 除外）。示例代码见 [04-lifecycle-entry/main.go](../examples/04-lifecycle-entry/main.go)。
+同一 wasm 可在 `Usages` 里声明多个系统场景（`UserBulkAction` 除外）。示例代码见 [04-lifecycle-entry/actions/stamp_on_enter.go](../examples/04-lifecycle-entry/actions/stamp_on_enter.go)。
 
 ## Go 代码（系统路径）
 

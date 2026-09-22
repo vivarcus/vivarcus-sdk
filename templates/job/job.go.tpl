@@ -1,4 +1,4 @@
-package main
+package jobs
 
 import "github.com/vivarcus/vivarcus-sdk/job"
 
@@ -27,4 +27,3 @@ func ({{TYPE_NAME}}) Process(ctx job.ProcessContext) (job.ProcessResult, error) 
 	return job.ProcessResult{}, nil
 }
 
-func main() {}

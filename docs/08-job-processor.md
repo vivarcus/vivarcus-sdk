@@ -45,6 +45,6 @@ ctx.ParamStrings("record_ids")
 
 ## 组件命名
 
-FQN 由 module 路径 + 类型名派生，例如 `acme.corp.jobprocessor.StampRecords`。入口类型可放在模块根、`jobs/` 或 `entries/`，**不要**放在 `shared/`。
+FQN 由 module 路径 + 类型名派生，例如 `acme.corp.jobprocessor.StampRecords`。编号示例放在 `jobs/`（`package jobs`），见 [07-job-processor](../examples/07-job-processor/jobs/stamp_records.go)。也可以放在模块根或 `entries/`，**不要**放在 `shared/`。
 
 调度：先部署 Sdkjob，再在 Admin > Operations 创建 SDK Job Metadata（`job_code` 填该 FQN）与类型为 **SDK Job** 的 Job Definition。

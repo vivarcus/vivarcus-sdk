@@ -29,7 +29,6 @@
 ```
 my-vault-sdk/
 ├── go.mod              # 本地 DX；module path → FQN 前缀（打 VPK 时写入 xml）
-├── main.go             # 薄入口（package main）
 ├── actions/            # package actions — Record Action 入口
 │   ├── foo.go
 │   └── bar.go
@@ -38,7 +37,7 @@ my-vault-sdk/
 └── shared/             # 跨 Action/Trigger 复用（非调度入口）
 ```
 
-也支持单一入口包 `entries/`（`package entries`），或把入口平铺在模块根（`package main`）。
+也支持单一入口包 `entries/`（`package entries`）。模块根仍可放 `package main` 的入口；编号示例不用这种写法，入口都在命名子目录里。
 
 约定：
 
@@ -47,6 +46,6 @@ my-vault-sdk/
 - 把入口从根目录挪到 `actions/` **不会改 FQN**（仍是 `<module>.<Type>`）
 - `shared/` 出现 `Meta()` 入口会构建失败
 
-本地 `go.mod` 可临时 `replace github.com/vivarcus/vivarcus-sdk => ../..`。`sdk put` 与 VPK 都只传 `.go`（**不要** `.wasm`、`go.mod`）。VPK 的 `module` 行由 `package-vpk.sh` 写入 `vaultpackage.xml`；`sdk put` 读邻近 `go.mod` 或 `--module`。
+本地 `go.mod` 可临时 `replace github.com/vivarcus/vivarcus-sdk => ../..`。平台 reactor 在根包生成 `func main` 并 import 入口包，客户源码不要写 `func main`。`sdk put` 与 VPK 都只传业务 `.go`（**不要** `.wasm`、`go.mod`）。编号示例的入口在命名子目录，例如 `actions/set_title.go`（`package actions`）。VPK 的 `module` 行由 `package-vpk.sh` 写入 `vaultpackage.xml`；`sdk put` 读邻近 `go.mod` 或 `--module`。
 
 编号示例下一步：[05-deploy](05-deploy.md) 的「单文件」。多文件 VPK：[04-package-vpk](04-package-vpk.md)

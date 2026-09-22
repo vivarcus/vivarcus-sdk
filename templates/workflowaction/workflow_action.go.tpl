@@ -1,4 +1,4 @@
-package main
+package workflowactions
 
 import "github.com/vivarcus/vivarcus-sdk/workflowaction"
 
@@ -17,4 +17,3 @@ func ({{TYPE_NAME}}) Execute(ctx workflowaction.RecordWorkflowActionContext) err
 	return nil
 }
 
-func main() {}

@@ -1,4 +1,4 @@
-package main
+package workflowactions
 
 import "github.com/vivarcus/vivarcus-sdk/workflowaction"
 
@@ -29,4 +29,3 @@ func (CaptureParticipants) Execute(ctx workflowaction.RecordWorkflowActionContex
 	return nil
 }
 
-func main() {}

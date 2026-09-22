@@ -5,9 +5,9 @@
 | 示例 | 怎么部署 |
 |------|----------|
 | **[multi-component](multi-component)** | **唯一走 VPK**：`package-vpk.sh` → `import` → `validate` → `deploy` |
-| **[01](01-hello-action)–[09](09-record-workflow-action)** | **单文件**：对象/配置用 `vivarcus component apply-mdl`，Go 用 `vivarcus sdk put -f main.go` |
+| **[01](01-hello-action)–[09](09-record-workflow-action)** | **单文件**：对象/配置用 `vivarcus component apply-mdl`，Go 用 `vivarcus sdk put -f <子目录>/<类型名>.go` |
 
-编号示例都是一个 `main.go` 入口；`sdk put` 把该文件 merge 进 vault 树并整树重编译。本地 `go test` 见 [02-update-field](02-update-field)。模块布局见 [docs/03-build.md](../docs/03-build.md)。
+编号示例把入口放在命名子目录（`actions/`、`triggers/`、`jobs/`、`webapis/`、`workflowactions/`），根目录不放客户 `.go`。`sdk put` 把该文件 merge 进 vault 树并整树重编译。本地 `go test ./...` 见 [02-update-field](02-update-field)。模块布局见 [docs/03-build.md](../docs/03-build.md)。
 
 | 目录 | 场景 |
 |------|------|

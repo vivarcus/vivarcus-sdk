@@ -1,4 +1,4 @@
-package main
+package webapis
 
 import (
 	"github.com/vivarcus/vivarcus-sdk/webapi"
@@ -29,4 +29,3 @@ func (HelloAPI) Execute(ctx webapi.Context) (webapi.Response, error) {
 	}, nil
 }
 
-func main() {}

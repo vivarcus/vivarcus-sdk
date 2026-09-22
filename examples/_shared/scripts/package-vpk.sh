@@ -86,6 +86,37 @@ for spec in "${COMPONENTS[@]}"; do
   printf '%s %s\n' "$md5" "$base" > "$DIST/$folder/${base}.md5"
 done
 
+is_local_main_harness() {
+  python3 - "$1" <<'PY'
+import re, sys
+src = open(sys.argv[1], encoding="utf-8").read()
+src = re.sub(r"/\*.*?\*/", "", src, flags=re.S)
+src = re.sub(r"//.*?$", "", src, flags=re.M)
+src = re.sub(r"`(?:\\.|[^`])*`", "``", src)
+src = re.sub(r'"(?:\\.|[^"\\])*"', '""', src)
+if not re.search(r"(?m)^\s*package\s+main\s*$", src):
+    sys.exit(1)
+if re.search(r"(?m)^\s*(type|const|var)\s+", src):
+    sys.exit(1)
+funcs = re.findall(r"(?m)^\s*func\s+(?:\([^)]*\)\s*)?(\w+)\s*\(", src)
+if funcs not in ([], ["main"]):
+    sys.exit(1)
+for m in re.finditer(r'(?m)^\s*import\s+(?:(\w+)\s+)?"', src):
+    if m.group(1) != "_":
+        sys.exit(1)
+block = re.search(r"import\s*\((.*?)\)", src, re.S)
+if block:
+    for line in block.group(1).splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        if line.startswith("_"):
+            continue
+        sys.exit(1)
+sys.exit(0)
+PY
+}
+
 while IFS= read -r -d '' file; do
   rel="${file#"$MODULE_DIR"/}"
   case "$rel" in
@@ -96,6 +127,12 @@ while IFS= read -r -d '' file; do
   case "$base" in
     zz_generated_reactor.go|*_test.go) continue ;;
   esac
+  # A root main.go that only blank-imports packages is local DX (same as go.mod).
+  # Entry files named after their type are still packed.
+  # Rule matches sourcetree.IsLocalMainHarness.
+  if [ "$rel" = "main.go" ] && is_local_main_harness "$file"; then
+    continue
+  fi
   mkdir -p "$DIST/gosdk/$(dirname "$rel")"
   cp "$file" "$DIST/gosdk/$rel"
 done < <(find "$MODULE_DIR" -type f -name '*.go' ! -path '*/dist/*' -print0)

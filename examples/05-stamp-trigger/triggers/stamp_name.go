@@ -1,4 +1,4 @@
-package main
+package triggers
 
 import "github.com/vivarcus/vivarcus-sdk/trigger"
 
@@ -24,4 +24,3 @@ func (StampName) Execute(ctx trigger.RecordTriggerContext) error {
 	return nil
 }
 
-func main() {}

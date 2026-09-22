@@ -8,7 +8,7 @@
 
 ```bash
 cd examples/01-hello-action
-vivarcus sdk put -f main.go --json
+vivarcus sdk put -f actions/noop_action.go --json
 ```
 
 有对象时（02 / 03 / 05 / 06）：
@@ -16,7 +16,7 @@ vivarcus sdk put -f main.go --json
 ```bash
 cd examples/02-update-field
 vivarcus component apply-mdl --confirm -f mdl/01-object.mdl
-vivarcus sdk put -f main.go --json
+vivarcus sdk put -f actions/set_title.go --json
 ```
 
 在客户 module 目录内 `--path` / `--module` 从 `go.mod` 推断。文件不在树里时显式指定：

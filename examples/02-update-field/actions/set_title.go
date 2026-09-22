@@ -1,4 +1,4 @@
-package main
+package actions
 
 import (
 	"github.com/vivarcus/vivarcus-sdk/action"
@@ -34,4 +34,3 @@ func (SetTitle) Execute(ctx action.RecordActionContext) (action.ExecuteResult, e
 	return action.ExecuteResult{}, nil
 }
 
-func main() {}

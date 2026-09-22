@@ -22,6 +22,8 @@ VPK 只含源码时，这些错误来自 **Vault 编译**。编号示例改 `.go
 | `gosdk_invalid` + api_version | `__sdk_describe` 须返回 `api_version`=`1`（入口类型实现不全时常出现） |
 | `gosdk_invalid` + import / whitelist | 含非法 import（`os`/`net` 等）；勿手写 wasm 塞进 VPK |
 | `gosdk_invalid` + go.mod / go.sum | VPK `gosdk/` 只放 `.go`；`module` 写在 `vaultpackage.xml` |
+| `gosdk_invalid` + local module harness | 根 `main.go` 只有空导入；留在本地，不要打进 VPK 或 `sdk put`。入口类型写在该文件里时可以上传 |
+| `gosdk_invalid` + must not declare func main | 删掉客户源码里的 `func main`。平台 reactor 会生成唯一的 `func main` |
 | `gosdk_invalid` + module path / `com.example` | `<gosdk><module>` 必填且不能是静默示例前缀 |
 | `no Record Action entry type found` | 至少一个类型实现 `Meta`/`IsExecutable`/`Execute`（可在 `actions/`、`entries/` 或模块根） |
 | `subdirectory entries must use a named package` | 子目录入口不能 `package main`，改为 `package actions` 等 |
@@ -29,7 +31,7 @@ VPK 只含源码时，这些错误来自 **Vault 编译**。编号示例改 `.go
 | `duplicate ... type name` | 同一 module 内类型名须唯一；或用 `Meta.Name` 钉 FQN |
 | `imports forbidden package` | 移除 `os`/`net` 等禁止包 |
 
-VPK `gosdk/` 只放 `.go`，不要放 `.wasm` 或 `go.mod`。
+VPK `gosdk/` 只放业务 `.go`，不要放 `.wasm`、`go.mod`、薄 `main.go`，也不要在源码里写 `func main`。
 
 ## 部署成功但按钮不出现
 
@@ -38,7 +40,7 @@ VPK `gosdk/` 只放 `.go`，不要放 `.wasm` 或 `go.mod`。
 3. 确认 `Meta.Object` 与当前记录对象一致
 4. 确认 `IsExecutable` 返回 `true`
 5. 确认用户有 object action 执行权限
-6. `vivarcus sdk get <FQN> -o /tmp/src.go --json` 能拉到客户 Go，说明组件已投影。编号示例用 `vivarcus sdk put -f main.go --json` 部署或覆盖；多文件树才 re-import VPK
+6. `vivarcus sdk get <FQN> -o /tmp/src.go --json` 能拉到客户 Go，说明组件已投影。编号示例用 `vivarcus sdk put -f <子目录>/<类型名>.go --json` 部署或覆盖；多文件树才 re-import VPK
 
 ## 点击按钮报错
 

@@ -11,7 +11,6 @@
 ```
 multi-component/
 ├── go.mod                      # 本地 DX（FQN 前缀来源；不进 VPK）
-├── main.go                     # 薄入口；codegen 生成 zz_generated_reactor.go
 ├── actions/                    # package actions — Record Action 调度入口
 │   ├── set_title.go
 │   ├── clear_title.go
@@ -52,7 +51,7 @@ vivarcus package deploy <package_id> --confirm --json
 ## go.mod 说明
 
 - 本地 clone 开发：`replace github.com/vivarcus/vivarcus-sdk => ../..`（见 [go.mod](go.mod)）。
-- **不要把 `go.mod` 打进 VPK**。`package-vpk.sh` 只打包 `.go`，并把 `module` 行写入 `vaultpackage.xml`。
+- **不要把 `go.mod` 打进 VPK**，也不要在业务 `.go` 里写 `func main`，不要再放只做空导入的根 `main.go`。`package-vpk.sh` 只打包业务 `.go`，并把 `module` 行写入 `vaultpackage.xml`。平台 reactor 生成 `func main` 并 import 入口包。
 
 ## 流程（端到端）
 

@@ -1,4 +1,4 @@
-package main
+package actions
 
 import (
 	"fmt"
@@ -41,4 +41,3 @@ func (QueryAndStamp) Execute(ctx action.RecordActionContext) (action.ExecuteResu
 	return action.ExecuteResult{}, nil
 }
 
-func main() {}

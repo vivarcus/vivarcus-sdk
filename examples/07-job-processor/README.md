@@ -4,13 +4,11 @@
 
 对标 Veeva Java SDK `com.veeva.vault.sdk.api.job.Job`（`@JobInfo` + `init` / `process`）。`completeWithSuccess` / `completeWithError` 由平台 job engine 根据 Process 结果写入，客户代码不实现。
 
-**不要打 VPK。** 多文件 combo 见 [multi-component](../multi-component)。
-
 ## Quick start
 
 ```bash
 cd examples/07-job-processor
-vivarcus sdk put -f main.go --json
+vivarcus sdk put -f jobs/stamp_records.go --json
 ```
 
 FQN：`acme.corp.jobprocessor.StampRecords`。`Process` 写的对象须已存在（可先跑 [02-update-field](../02-update-field) 的 `mdl/01-object.mdl`）。

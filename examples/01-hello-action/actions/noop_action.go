@@ -1,4 +1,4 @@
-package main
+package actions
 
 import (
 	"github.com/vivarcus/vivarcus-sdk/action"
@@ -23,4 +23,3 @@ func (NoopAction) Execute(ctx action.RecordActionContext) (action.ExecuteResult,
 	return action.ExecuteResult{}, nil
 }
 
-func main() {}
