@@ -28,7 +28,8 @@ VPK 只含源码时，这些错误来自 **Vault 编译**。编号示例改 `.go
 | `no Record Action entry type found` | 至少一个类型实现 `Meta`/`IsExecutable`/`Execute`（可在 `actions/`、`entries/` 或模块根） |
 | `subdirectory entries must use a named package` | 子目录入口不能 `package main`，改为 `package actions` 等 |
 | `must not live in shared/` | `shared/` 只放 helper；把 `Meta()` 入口移到 `actions/` / `triggers/` / `entries/` 或模块根 |
-| `duplicate ... type name` | 同一 module 内类型名须唯一；或用 `Meta.Name` 钉 FQN |
+| `duplicate ... type name` | 同一 module 内类型名须唯一；报错里的两个路径就是冲突文件。或用 `Meta.Name` 钉不同 FQN |
+| `duplicate action type name SetTitle in main.go and actions/set_title.go`（目录显示为 `.` 与 `actions` 是同一类） | 这个 module 上已经有根目录入口，又 `sdk put` 了 `actions/` 里的同名类型。`sdk put` 只合并、不删旧文件。编号示例 01–09 不要对同一 module 先打 VPK。要换成 `actions/` 布局：用 `deployment_option=replace_all` 的 VPK 只放目标 `.go`，或换一个新 module。已部署的按钮仍可执行。见 [05-deploy](05-deploy.md) |
 | `imports forbidden package` | 移除 `os`/`net` 等禁止包 |
 
 VPK `gosdk/` 只放业务 `.go`，不要放 `.wasm`、`go.mod`、薄 `main.go`，也不要在源码里写 `func main`。

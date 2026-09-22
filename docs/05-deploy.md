@@ -1,6 +1,8 @@
 # 部署
 
-编号示例（01–09）用 **单文件 `sdk put`**。[multi-component](../examples/multi-component) 才用 **Inbound VPK**。不要把两种流程套在同一个示例上。
+编号示例（01–09）用 **单文件 `sdk put`**。[multi-component](../examples/multi-component) 才用 **Inbound VPK**。不要把两种流程套在同一个示例上，也不要套在同一个 module 上。
+
+`sdk put` 把这一个 `.go` 合并进 Vault 源码树后再整树编译，**不会删除**树上已有的其它文件。若该 module 曾用 VPK 装过根目录入口（`package main` 的 `SetTitle`，`sdk get` 能拉到），再执行 `sdk put -f actions/set_title.go` 会报 `duplicate action type name SetTitle in main.go and actions/set_title.go`。单文件 `DELETE /code/{name}` 不支持。要改成编号示例的 `actions/` 布局，用 `deployment_option=replace_all` 的 VPK 只放目标 `.go`，或换一个新的 `<module>`。已部署的按钮不受影响，只是不能按 README 再增量 `put`。
 
 ## 单文件（01–09）
 
