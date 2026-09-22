@@ -72,7 +72,7 @@
 
 ## vivarcus CLI 认证（避免登录限流）
 
-部署与 MDL 命令依赖 `vivarcus`。**不要**每条命令前密码 login：服务端对 `POST /ui/auth/login` 限 **4 次/分钟/IP+用户**。整段任务注入并复用 `VIVARCUS_TOKEN`（+ `VIVARCUS_ENDPOINT`、`VIVARCUS_VAULT`），详见 [01-prerequisites](docs/01-prerequisites.md)。
+部署与 MDL 命令依赖 `vivarcus`。**不要**每条命令前密码 login：服务端对 `POST /ui/auth/login` 限 **10 次/分钟/IP+用户**。整段任务注入并复用 `VIVARCUS_TOKEN`（+ `VIVARCUS_ENDPOINT`、`VIVARCUS_VAULT`），详见 [01-prerequisites](docs/01-prerequisites.md)。
 
 ## 禁止事项
 

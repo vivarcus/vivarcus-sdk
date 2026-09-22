@@ -2,7 +2,7 @@
 
 ## vivarcus 登录 HTTP 429（too many login attempts）
 
-密码登录限流：**同一 IP + 用户名，1 分钟最多 4 次**（`POST /ui/auth/login`、Vault REST `POST /api/{version}/auth`）。
+密码登录限流：**同一 IP + 用户名，1 分钟最多 10 次**（`POST /ui/auth/login`、Vault REST `POST /api/{version}/auth`）。
 
 | 现象 | 处理 |
 |------|------|

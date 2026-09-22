@@ -7,7 +7,16 @@
 | 软件 | 版本 | 用途 |
 |------|------|------|
 | Go | 与 `sdk/go.mod` 一致（当前 1.26.2） | 编写 Action 源码、本地 `go test` |
-| vivarcus CLI | 与目标 Vault 版本对齐 | MDL、VPK 部署 |
+| vivarcus CLI | 与目标 Vault 版本对齐 | MDL、单文件 `sdk put`、VPK 部署 |
+
+**CLI 与文档对照**（编号示例 01–09 用 `sdk put`，见 [05-deploy](05-deploy.md)）：
+
+| vivarcus-cli Release | `vivarcus sdk` 子命令 |
+|----------------------|------------------------|
+| `v26R3.3-13318` 及更早 | 仅 `status` |
+| 晚于 `v26R3.3-13318` 的首个 Release 起 | `status`、`logs`、`get`、`put`、`enable`、`disable` |
+
+安装后执行 `vivarcus sdk --help` 确认；若缺少 `put`，请升级 CLI 或改用 [04-package-vpk](04-package-vpk.md) / multi-component VPK。
 
 VPK 只上传 `.go`；wasm 由 Vault 镜像编译。本仓库（`github.com/vivarcus/vivarcus-sdk`）是 guest API，不含编译器。模块布局见 [03-build](03-build.md)。
 
@@ -45,7 +54,7 @@ vivarcus config set default_vault <vault_id>
 
 ### Agent / CI：复用 token，避免登录限流
 
-密码登录限流：**同一 IP + 用户名，1 分钟最多 4 次**（`POST /ui/auth/login`、Vault REST `POST /api/{version}/auth`）。编码 Agent 与自动化脚本**不要在每条 `vivarcus` 命令前重新 login**，也不要在循环里 `curl` 密码登录。
+密码登录限流：**同一 IP + 用户名，1 分钟最多 10 次**（`POST /ui/auth/login`、Vault REST `POST /api/{version}/auth`）。编码 Agent 与自动化脚本**不要在每条 `vivarcus` 命令前重新 login**，也不要在循环里 `curl` 密码登录。
 
 整段构建/部署任务复用同一 session token（最长 48 小时）：
 
