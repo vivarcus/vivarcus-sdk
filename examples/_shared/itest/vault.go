@@ -124,6 +124,22 @@ func (e *Env) ApplyMDL(t *testing.T, path string) {
 	e.Run(t, "component", "apply-mdl", "--confirm", "-f", path, "--json")
 }
 
+// ApplyObjectMDLIfMissing applies object MDL only when the object component is absent.
+// RECREATE Object fails once records exist (e.g. lifecycle__v); integration tests re-apply lifecycle/workflow only.
+func (e *Env) ApplyObjectMDLIfMissing(t *testing.T, object, path string) {
+	t.Helper()
+	if e.ObjectComponentExists(t, object) {
+		return
+	}
+	e.ApplyMDL(t, path)
+}
+
+func (e *Env) ObjectComponentExists(t *testing.T, object string) bool {
+	t.Helper()
+	_, err := e.runOutput(t, "object", "schema", "get", object, "--json")
+	return err == nil
+}
+
 func (e *Env) SDKPut(t *testing.T, path string) {
 	t.Helper()
 	e.Run(t, "sdk", "put", "-f", path, "--json")

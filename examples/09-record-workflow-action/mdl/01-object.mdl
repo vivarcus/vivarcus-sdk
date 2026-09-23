@@ -1,6 +1,6 @@
-RECREATE Object sdk_demo__c (
-  label('SDK Demo'),
-  label_plural('SDK Demos'),
+RECREATE Object capture_demo__c (
+  label('Capture Demo'),
+  label_plural('Capture Demos'),
   active(true),
   in_menu(true),
   audit(false),

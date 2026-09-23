@@ -76,7 +76,7 @@ cd examples/<示例目录>    # monorepo: cd sdk/examples/<示例目录>
 | [06-query-field](06-query-field) | `mdl/01-object.mdl` | `actions/query_and_stamp.go` | |
 | [07-job-processor](07-job-processor) | `mdl/01-object.mdl` | `jobs/stamp_records.go` | 调度在 Admin Job Definitions |
 | [08-hello-webapi](08-hello-webapi) | `mdl/01-webapigroup.mdl` | `webapis/hello_api.go` | 非 Owner 须 Permission Set |
-| [09-record-workflow-action](09-record-workflow-action) | 多条 `mdl/*.mdl`（见 README 顺序） | `workflowactions/capture_participants.go` | workflow MDL 在源码部署之后 |
+| [09-record-workflow-action](09-record-workflow-action) | 多条 `mdl/*.mdl`（见 README 顺序） | `workflowactions/capture_participants.go` | 对象 `capture_demo__c`；workflow MDL 在源码部署之后 |
 | [multi-component](multi-component) | 生命周期 MDL，对象打进 VPK | 目录内全部入口 | `package-vpk.sh --replace` |
 
 ### 6. 验证部署成功

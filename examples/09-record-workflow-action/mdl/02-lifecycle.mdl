@@ -1,5 +1,5 @@
-RECREATE Objectlifecycle sdk_demo_lc__c (
-  label('SDK Demo LC'),
+RECREATE Objectlifecycle capture_demo_lc__c (
+  label('Capture Demo LC'),
   active(true),
   starting_state('Objectlifecyclestate.draft__c'),
   Objectlifecyclestate draft__c(

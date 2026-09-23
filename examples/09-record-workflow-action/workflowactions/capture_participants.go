@@ -9,7 +9,7 @@ type CaptureParticipants struct{}
 func (CaptureParticipants) Meta() workflowaction.Meta {
 	return workflowaction.Meta{
 		Label:     "Capture Participants",
-		Object:    "sdk_demo__c",
+		Object:    "capture_demo__c",
 		StepTypes: []workflowaction.StepType{workflowaction.StepStart},
 	}
 }

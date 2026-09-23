@@ -1,7 +1,7 @@
 RECREATE Objectworkflow capture_participants_wf__c (
   label('Capture Participants WF'),
   active(true),
-  object_lifecycles('Objectlifecycle.sdk_demo_lc__c'),
+  object_lifecycles('Objectlifecycle.capture_demo_lc__c'),
   auto_start(false),
   cardinality('One'),
   workflow_content_type('Object'),

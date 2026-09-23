@@ -24,8 +24,8 @@ vivarcus sdk put -f workflowactions/capture_participants.go --json
 vivarcus component apply-mdl --confirm -f mdl/04-workflow.mdl
 ```
 
-FQN：`acme.corp.sdkdemo.CaptureParticipants`。在 `sdk_demo__c` 记录上执行生命周期动作 **Start Capture Participants WF**，打开工作流启动对话框验证参与人预填。
+FQN：`acme.corp.sdkdemo.CaptureParticipants`。对象是 `capture_demo__c`（不共用 `sdk_demo__c`）。在记录上执行生命周期动作 **Start Capture Participants WF**，打开工作流启动对话框验证参与人预填。
 
-当前平台会投影 `Recordworkflowaction` 组件；Start 步骤上已挂的 FQN 会在 `GET_PARTICIPANTS` 时被调用。客户 wasm 执行路径正在接入，若运行时报 `customer wasm not supported yet`，那是运行时还未跑 guest 模块，与本示例代码无关。
+当前平台会投影 `Recordworkflowaction` 组件。Start 步骤上已挂的 FQN 会在 `GET_PARTICIPANTS` 时执行客户 wasm，并把返回的参与人写回启动对话框。
 
 集成测试（已登录 Vault）：`go test -tags=integration -count=1 -timeout 20m .`

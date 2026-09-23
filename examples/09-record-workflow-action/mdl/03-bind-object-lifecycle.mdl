@@ -1,3 +1,3 @@
-ALTER Object sdk_demo__c (
-  available_lifecycles('sdk_demo_lc__c')
+ALTER Object capture_demo__c (
+  available_lifecycles('capture_demo_lc__c')
 );
