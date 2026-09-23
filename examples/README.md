@@ -18,8 +18,8 @@
 | [04-lifecycle-entry](04-lifecycle-entry) | entry / event / workflow / cancel（`sdk put` + 生命周期 MDL） |
 | [05-stamp-trigger](05-stamp-trigger) | Record Trigger（`sdk put`） |
 | [06-query-field](06-query-field) | 记录页按钮 + 只读 VQL（`sdk put`） |
-| [07-job-processor](07-job-processor) | Job Processor（`sdk put`） |
-| [08-hello-webapi](08-hello-webapi) | Custom Web API（`sdk put`） |
-| [09-record-workflow-action](09-record-workflow-action) | Record Workflow Action（`sdk put`） |
+| [07-job-processor](07-job-processor) | Job Processor（`sdk put` + 对象 MDL） |
+| [08-hello-webapi](08-hello-webapi) | Custom Web API（`sdk put` + Webapigroup MDL） |
+| [09-record-workflow-action](09-record-workflow-action) | Record Workflow Action（`sdk put` + 生命周期/工作流 MDL） |
 
 VPK 细节：[04-package-vpk](../docs/04-package-vpk.md)、[05-deploy](../docs/05-deploy.md)。脚本仅 multi-component 需要：[`_shared/scripts/package-vpk.sh`](_shared/scripts/package-vpk.sh)

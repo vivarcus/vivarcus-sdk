@@ -27,7 +27,7 @@ vivarcus sdk put -f actions/set_title.go --json
 vivarcus sdk put -f /tmp/title.go --path shared/title.go --module github.com/acme.corp.hello --json
 ```
 
-成功 `responseMessage` 为 `Modified file`。`DELETE /code/{name}` **不支持**。不要上传 `*_test.go` 或 `zz_generated_reactor.go`。
+成功 `responseMessage` 为 `Modified file`。命令会等到编译结束再退出。中断它会取消服务端作业（`DELETE /api/{version}/code/compile/{job_id}`），排队的不再编译，正在跑的 `tinygo` 会被停掉。已经成功或失败的作业不能再取消。`DELETE /code/{name}` **不支持**。不要上传 `*_test.go` 或 `zz_generated_reactor.go`。
 
 生命周期规则若引用 `Recordaction.<FQN>`：先 `sdk put` 投影组件，再 apply 那些 MDL（见 [04-lifecycle-entry](../examples/04-lifecycle-entry)）。
 

@@ -1,4 +1,4 @@
-CREATE Object IF NOT EXISTS sdk_demo__c (
+RECREATE Object sdk_demo__c (
   label('SDK Demo'),
   label_plural('SDK Demos'),
   active(true),
@@ -7,6 +7,13 @@ CREATE Object IF NOT EXISTS sdk_demo__c (
   Field title__c (
     type('String'),
     label('Title'),
+    required(false),
+    list_column(true),
+    active(true)
+  ),
+  Field stamped__c (
+    type('Boolean'),
+    label('Stamped'),
     required(false),
     list_column(true),
     active(true)

@@ -4,11 +4,11 @@
 
 | 文件 | 对应 README | 内容 |
 |------|-------------|------|
-| [01-object.mdl](01-object.mdl) | Prerequisites | 对象与 `title__c` — `vivarcus component apply-mdl`（**不要**打 VPK） |
-| [02-lifecycle.mdl](02-lifecycle.mdl) | Step 3–4、6 | 生命周期 + submit user action + entry + `create_record` event |
+| [01-object.mdl](01-object.mdl) | Prerequisites | `RECREATE` `demo_request__c`（可重复 `apply-mdl`）— **不要**打 VPK |
+| [02-lifecycle.mdl](02-lifecycle.mdl) | Step 3–4、6 | `RECREATE` 生命周期 + submit / entry / `create_record` event（`{{ACTION_FQN}}` 须 render） |
 | [03-bind-object-lifecycle.mdl](03-bind-object-lifecycle.mdl) | — | `ALTER Object` 绑定 lifecycle |
-| [04-workflow-action.mdl](04-workflow-action.mdl) | Step 5 | Action 步 workflow（`Recordaction.{{ACTION_FQN}}`） |
-| [05-workflow-cancel.mdl](05-workflow-cancel.mdl) | Step 7 | 带 usertask + Cancelation Action 的 workflow |
+| [04-workflow-action.mdl](04-workflow-action.mdl) | Step 5 | `RECREATE` Action 步 workflow（`Recordaction.{{ACTION_FQN}}`） |
+| [05-workflow-cancel.mdl](05-workflow-cancel.mdl) | Step 7 | `RECREATE` usertask + Cancelation Action workflow |
 
 手工应用：`01-object.mdl` 无占位符，直接 apply。`02` / `04` / `05` 须先 `sdk put` 投影 `Recordaction`，再展开 `{{ACTION_FQN}}`：
 

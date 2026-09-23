@@ -68,9 +68,9 @@ cd my-action && go test ./...
 | 确认对话框 | [examples/03-confirm-dialog](examples/03-confirm-dialog) | `OnPreExecute` / `OnPostExecute`（`sdk put`） |
 | **系统自动执行** | [examples/04-lifecycle-entry](examples/04-lifecycle-entry) | entry / event / workflow / cancel（`sdk put` + MDL） |
 | Record Trigger | [examples/05-stamp-trigger](examples/05-stamp-trigger) | 单一 Trigger（`sdk put`） |
-| Job Processor | [examples/07-job-processor](examples/07-job-processor) | Init / Process（`sdk put`） |
-| Custom Web API | [examples/08-hello-webapi](examples/08-hello-webapi) | Custom Web API（`sdk put`） |
-| Record Workflow Action | [examples/09-record-workflow-action](examples/09-record-workflow-action) | GET_PARTICIPANTS（`sdk put`） |
+| Job Processor | [examples/07-job-processor](examples/07-job-processor) | Init / Process（`sdk put` + 对象 MDL） |
+| Custom Web API | [examples/08-hello-webapi](examples/08-hello-webapi) | Custom Web API（`sdk put` + Webapigroup MDL） |
+| Record Workflow Action | [examples/09-record-workflow-action](examples/09-record-workflow-action) | GET_PARTICIPANTS（`sdk put` + MDL） |
 
 ### 5. 准备 Vault 元数据（MDL）
 

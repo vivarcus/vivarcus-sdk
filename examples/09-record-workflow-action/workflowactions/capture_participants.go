@@ -18,7 +18,7 @@ func (CaptureParticipants) Execute(ctx workflowaction.RecordWorkflowActionContex
 	if ctx.Event != workflowaction.EventGetParticipants {
 		return nil
 	}
-	group := "approver"
+	group := "approver__c"
 	if ctx.ParticipantGroup != nil && ctx.ParticipantGroup.Name != "" {
 		group = ctx.ParticipantGroup.Name
 	}

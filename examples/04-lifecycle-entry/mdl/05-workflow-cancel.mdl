@@ -1,4 +1,4 @@
-CREATE Objectworkflow IF NOT EXISTS stamp_on_enter_wf_cancel__c (
+RECREATE Objectworkflow stamp_on_enter_wf_cancel__c (
   label('Stamp On Enter WF Cancel'),
   active(true),
   object_lifecycles('Objectlifecycle.demo_request_lc__c'),

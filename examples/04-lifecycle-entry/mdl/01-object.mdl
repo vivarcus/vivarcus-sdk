@@ -1,9 +1,10 @@
-CREATE Object IF NOT EXISTS demo_request__c (
+RECREATE Object demo_request__c (
   label('Demo Request'),
   label_plural('Demo Requests'),
   active(true),
   in_menu(true),
   audit(false),
+  available_lifecycles('demo_request_lc__c'),
   Field title__c (
     type('String'),
     label('Title'),

@@ -1,0 +1,4 @@
+RECREATE Webapigroup integration__c (
+  label('Integration'),
+  active(true)
+);

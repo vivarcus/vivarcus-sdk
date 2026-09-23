@@ -1,4 +1,4 @@
-CREATE Objectlifecycle IF NOT EXISTS demo_request_lc__c (
+RECREATE Objectlifecycle demo_request_lc__c (
   label('Demo Request LC'),
   active(true),
   starting_state('Objectlifecyclestate.draft__c'),

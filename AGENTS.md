@@ -127,9 +127,9 @@ rec.SetValue(field, value) // Execute 内暂存，配合 platform.Update 持久�
 | `examples/04-lifecycle-entry` | entry / event / workflow step / cancel（`sdk put` + MDL） |
 | `examples/05-stamp-trigger` | Record Trigger（`sdk put`） |
 | `examples/06-query-field` | 记录页按钮 + 只读 VQL（`sdk put`） |
-| `examples/07-job-processor` | Job Processor（`sdk put`） |
-| `examples/08-hello-webapi` | Custom Web API（`sdk put`） |
-| `examples/09-record-workflow-action` | Record Workflow Action（`sdk put`） |
+| `examples/07-job-processor` | Job Processor（`sdk put` + 对象 MDL） |
+| `examples/08-hello-webapi` | Custom Web API（`sdk put` + Webapigroup MDL） |
+| `examples/09-record-workflow-action` | Record Workflow Action（`sdk put` + 生命周期/工作流 MDL） |
 | `examples/multi-component` | **唯一 VPK 示例**：多 Action/Trigger + MDL + combo 包 |
 
 ## 反馈

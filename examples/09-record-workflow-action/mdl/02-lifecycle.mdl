@@ -12,15 +12,10 @@ RECREATE Objectlifecycle sdk_demo_lc__c (
     active(true),
     record_status('active__v')
   ),
-  Objectlifecyclestateuseraction draft__c.submit__c(
-    label('Submit'),
+  Objectlifecyclestateuseraction draft__c.start_capture_wf__c(
+    label('Start Capture Participants WF'),
     rule({<?xml version="1.0" encoding="UTF-8"?>
-<rule><actions><action type="LIFECYCLE_STATE_CHANGE_ACTION" transitionState="Objectlifecyclestate.in_review__c"/></actions></rule>}),
-    order(1000)
-  ),
-  Objectlifecyclestateentryaction in_review__c.stamp__c(
-    rule({<?xml version="1.0" encoding="UTF-8"?>
-<rule><actions><action type="Recordaction.{{ACTION_FQN}}"/></actions></rule>}),
+<rule><actions><action type="LIFECYCLE_RUN_WORKFLOW_ACTION" objectWorkflow="Objectworkflow.capture_participants_wf__c"/></actions></rule>}),
     order(1000)
   )
 );

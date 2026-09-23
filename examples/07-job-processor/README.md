@@ -8,9 +8,10 @@
 
 ```bash
 cd examples/07-job-processor
+vivarcus component apply-mdl --confirm -f mdl/01-object.mdl
 vivarcus sdk put -f jobs/stamp_records.go --json
 ```
 
-FQN：`acme.corp.jobprocessor.StampRecords`。`Process` 写的对象须已存在（可先跑 [02-update-field](../02-update-field) 的 `mdl/01-object.mdl`）。
+FQN：`acme.corp.jobprocessor.StampRecords`。`Process` 写 `sdk_demo__c.stamped__c`，须先 `apply-mdl`（与 [02-update-field](../02-update-field) 同对象定义，可重复 `RECREATE`）。
 
 调度：Admin > Operations > **Job Definitions**，类型 **SDK Job**，绑定 SDK Job Metadata（`job_code` 为本 FQN）。
