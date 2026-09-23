@@ -109,8 +109,76 @@ deploy_apply_mdl() {
 
 deploy_sdk_put() {
   local f="${1:?go file}"
-  deploy_cli_json sdk put -f "$f" >/dev/null
+  local out
+  out=$(deploy_cli_json sdk put -f "$f")
+  deploy_wait_code_compile "$out"
   echo "sdk put: $f"
+}
+
+# Block until a queued sdk put compile is SUCCESS. A body with no job_status, or
+# job_status SUCCESS, is already final (CLI polled, or an older synchronous PUT).
+deploy_wait_code_compile() {
+  local payload="${1:?sdk put json}"
+  VIVARCUS_COMPILE_PAYLOAD="$payload" python3 - "$VIVARCUS" <<'PY'
+import json, os, subprocess, sys, time, urllib.error, urllib.request
+
+vivarcus = sys.argv[1]
+try:
+    body = json.loads(os.environ["VIVARCUS_COMPILE_PAYLOAD"])
+except json.JSONDecodeError as exc:
+    print(f"sdk put: invalid json: {exc}", file=sys.stderr)
+    sys.exit(1)
+
+def cfg(key):
+    try:
+        out = subprocess.check_output(
+            [vivarcus, "config", "get", key], text=True, stderr=subprocess.DEVNULL
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return ""
+    return out.strip()
+
+status = (body.get("job_status") or "").strip()
+if status in ("", "SUCCESS"):
+    sys.exit(0)
+url = (body.get("url") or "").strip()
+if not url:
+    print(f"sdk put: compile job url missing (job_status={status})", file=sys.stderr)
+    sys.exit(1)
+endpoint = (os.environ.get("VIVARCUS_ENDPOINT") or cfg("endpoint")).rstrip("/")
+token = (os.environ.get("VIVARCUS_TOKEN") or cfg("token")).strip()
+vault = (os.environ.get("VIVARCUS_VAULT") or cfg("default_vault")).strip()
+if not endpoint or not token or not vault:
+    print("sdk put: need endpoint, token, and vault to wait for compile", file=sys.stderr)
+    sys.exit(1)
+deadline = time.time() + 30 * 60
+while status not in ("", "SUCCESS"):
+    if status in ("FAILURE", "CANCELLED"):
+        print(f"sdk compile {status}: {json.dumps(body)}", file=sys.stderr)
+        sys.exit(1)
+    if time.time() > deadline:
+        print(f"sdk compile timed out ({status})", file=sys.stderr)
+        sys.exit(1)
+    time.sleep(2)
+    req = urllib.request.Request(
+        endpoint + url,
+        headers={"Authorization": "Bearer " + token, "X-Vault-Id": vault},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            raw = resp.read().decode()
+    except urllib.error.HTTPError as exc:
+        print(exc.read().decode(), file=sys.stderr)
+        sys.exit(1)
+    body = json.loads(raw)
+    if body.get("responseStatus") == "FAILURE":
+        print(raw, file=sys.stderr)
+        sys.exit(1)
+    status = (body.get("job_status") or "").strip()
+    nxt = (body.get("url") or "").strip()
+    if nxt:
+        url = nxt
+PY
 }
 
 # Usage: deploy_render_mdl <src> <dst> [VAR=val ...]

@@ -24,13 +24,15 @@ vivarcus component apply-mdl --confirm -f mdl/01-object.mdl
 vivarcus sdk put -f actions/set_title.go --json
 ```
 
+`sdk_demo__c` 已存在时不要再 apply 这条 `RECREATE`。见 [examples/README — 对象 MDL](../examples/README.md#对象-mdl)。
+
 在客户 module 目录内 `--path` / `--module` 从 `go.mod` 推断。文件不在树里时显式指定：
 
 ```bash
 vivarcus sdk put -f /tmp/title.go --path shared/title.go --module github.com/acme.corp.sdkdemo --json
 ```
 
-成功 `responseMessage` 为 `Modified file`。命令会等到编译结束再退出。同一 Vault 上再执行 `sdk put` 会停掉正在编译的 tinygo，把还没写入的文件并进下一次编译：不同文件会一起编，两次命令都等到成功；同一个文件以后一次为准，前一次得到取消。已经开始写源码和 wasm 的编译不会被停掉。中断命令会取消该作业（`DELETE /api/{version}/code/compile/{job_id}`）。已经成功或失败的作业不能再取消。`DELETE /code/{name}` **不支持**。不要上传 `*_test.go` 或 `zz_generated_reactor.go`。
+成功 `responseMessage` 为 `Modified file`。命令会等到编译结束再退出。若手上的 CLI 仍打印 `job_status: QUEUED`，`./deploy.sh` 与集成测试会继续轮询 `url`，直到 `SUCCESS` 或失败。同一 Vault 上再执行 `sdk put` 会停掉正在编译的 tinygo，把还没写入的文件并进下一次编译：不同文件会一起编，两次命令都等到成功；同一个文件以后一次为准，前一次得到取消。已经开始写源码和 wasm 的编译不会被停掉。中断命令会取消该作业（`DELETE /api/{version}/code/compile/{job_id}`）。已经成功或失败的作业不能再取消。`DELETE /code/{name}` **不支持**。不要上传 `*_test.go` 或 `zz_generated_reactor.go`。
 
 生命周期规则若引用 `Recordaction.<FQN>`：先 `sdk put` 投影组件，再 apply 那些 MDL（见 [04-lifecycle-entry](../examples/04-lifecycle-entry)）。
 

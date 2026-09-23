@@ -31,7 +31,7 @@ cd examples/01-hello-action
 ./deploy.sh
 ```
 
-有对象的编号示例先 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，再 `sdk put`。**每个示例怎么部署**（前置、目录、`sdk put` vs VPK、速查表）见 [examples/README.md — 部署入门](examples/README.md#部署入门)。
+有对象的编号示例：绿场先 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，再 `sdk put`；对象已在则只 `sdk put`。详见 [examples/README.md — 对象 MDL](examples/README.md#对象-mdl)。
 
 ### 3. 多文件：combo VPK（仅 multi-component）
 

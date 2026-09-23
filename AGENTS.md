@@ -15,7 +15,7 @@
 
 1. 对照模板实现接口；`Meta` 与对象 / 按钮 api_name 对齐。
 2. `go test ./...`：直接调 `Execute` / `Process`，mock `platform.*` 的 `*Func`（见 [examples/02-update-field/actions/set_title_test.go](examples/02-update-field/actions/set_title_test.go)）。`*_test.go` **不**部署。
-3. 编号示例：需要对象时 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，然后 `vivarcus sdk put -f actions/set_title.go --json`（路径按示例子目录）。
+3. 编号示例：对象尚不存在时 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，然后 `vivarcus sdk put -f actions/set_title.go --json`（路径按示例子目录）。`sdk_demo__c` 已存在则不要再 apply 这条 `RECREATE`，只 `sdk put`。
 4. 多文件树才打 VPK：只做 [examples/multi-component](examples/multi-component)。编译失败时读 `gosdk_invalid` 改源码再 `put` 或 re-deploy。
 5. 在 Vault 验证按钮 / Trigger / Job / Web API。
 

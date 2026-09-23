@@ -142,7 +142,47 @@ func (e *Env) ObjectComponentExists(t *testing.T, object string) bool {
 
 func (e *Env) SDKPut(t *testing.T, path string) {
 	t.Helper()
-	e.Run(t, "sdk", "put", "-f", path, "--json")
+	out := e.Run(t, "sdk", "put", "-f", path, "--json")
+	e.waitCodeCompile(t, out)
+}
+
+// waitCodeCompile blocks until a queued sdk put compile finishes.
+// A response without job_status, or job_status SUCCESS, is already final.
+func (e *Env) waitCodeCompile(t *testing.T, out map[string]any) {
+	t.Helper()
+	status, _ := out["job_status"].(string)
+	if status == "" || status == "SUCCESS" {
+		return
+	}
+	pollURL, _ := out["url"].(string)
+	pollURL = strings.TrimSpace(pollURL)
+	if pollURL == "" {
+		t.Fatalf("sdk put job_status=%s: compile job url missing", status)
+	}
+	deadline := time.Now().Add(15 * time.Minute)
+	if d, ok := t.Deadline(); ok && d.Before(deadline) {
+		deadline = d.Add(-time.Second)
+	}
+	for {
+		switch status {
+		case "FAILURE", "CANCELLED":
+			t.Fatalf("sdk compile %s: %v", status, out)
+		case "", "SUCCESS":
+			return
+		}
+		if !time.Now().Before(deadline) {
+			t.Fatalf("sdk compile timed out (%s): %v", status, out)
+		}
+		time.Sleep(2 * time.Second)
+		out = e.API(t, http.MethodGet, pollURL, nil)
+		if rs, _ := out["responseStatus"].(string); rs == "FAILURE" {
+			t.Fatalf("sdk compile failed: %v", out)
+		}
+		status, _ = out["job_status"].(string)
+		if next, _ := out["url"].(string); strings.TrimSpace(next) != "" {
+			pollURL = strings.TrimSpace(next)
+		}
+	}
 }
 
 func (e *Env) SDKGetContains(t *testing.T, fqn, substr string) {

@@ -60,7 +60,11 @@ cd examples/<示例目录>    # monorepo: cd sdk/examples/<示例目录>
 ./deploy.sh               # 开头会打印当前 endpoint / vault
 ```
 
-脚本步骤与 `integration_test.go` 一致。
+脚本步骤与 `integration_test.go` 一致。`sdk put` 的编译是异步的：`./deploy.sh` 和集成测试都会等到 `job_status` 为 `SUCCESS` 再继续。
+
+### 对象 MDL
+
+`sdk_demo__c` 的 `01-object.mdl` 是 `RECREATE`，且不含生命周期。只在空 Vault 或重置后的绿场上执行 `./deploy.sh`（以及集成测试里的 `apply-mdl`）。对象已经存在时——尤其跑过 [multi-component](multi-component) 并绑了 `sdk_demo_lc__c`——不要再 apply 这条 MDL，只 `vivarcus sdk put`。
 
 ### 5. 各示例部署速查
 
