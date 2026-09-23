@@ -1,6 +1,4 @@
 // Package action is the Vivarcus Record Action API for wasm guests (tinygo / wasip1 safe).
-//
-// Conceptually aligned with Veeva Vault Java SDK RecordAction.
 package action
 
 import (
@@ -11,7 +9,7 @@ import (
 	"github.com/vivarcus/vivarcus-sdk/wire"
 )
 
-// Usage describes where a Record Action may appear (Java Usage).
+// Usage describes where a Record Action may appear.
 type Usage string
 
 const (
@@ -33,7 +31,7 @@ const (
 	RunAsRequestOwner RunAs = "RequestOwner"
 )
 
-// Meta declares component-level static metadata (Java @RecordActionInfo).
+// Meta declares component-level static metadata for one Record Action.
 type Meta struct {
 	// Name is the Recordaction FQN. Empty → toolchain derives from module + type.
 	Name string

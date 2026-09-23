@@ -1,6 +1,10 @@
 package triggers
 
-import "github.com/vivarcus/vivarcus-sdk/trigger"
+import (
+	"strings"
+
+	"github.com/vivarcus/vivarcus-sdk/trigger"
+)
 
 // StampName appends "-trig" to name__v on BEFORE_INSERT (demo Record Trigger).
 type StampName struct{}
@@ -20,6 +24,9 @@ func (StampName) Execute(ctx trigger.RecordTriggerContext) error {
 		return nil
 	}
 	name := ctx.RecordChanges[0].New.GetString("name__v")
+	if strings.HasSuffix(name, "-trig") {
+		return nil
+	}
 	ctx.RecordChanges[0].New.SetValue("name__v", name+"-trig")
 	return nil
 }

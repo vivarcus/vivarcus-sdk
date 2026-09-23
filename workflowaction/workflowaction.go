@@ -1,7 +1,5 @@
 // Package workflowaction is the Vivarcus Record Workflow Action API for wasm guests
 // (tinygo / wasip1 safe).
-//
-// Conceptually aligned with Veeva Vault Java SDK RecordWorkflowAction.
 package workflowaction
 
 import (
@@ -12,7 +10,7 @@ import (
 	"github.com/vivarcus/vivarcus-sdk/wire"
 )
 
-// StepType is where a Record Workflow Action may be configured (Veeva WorkflowStepType).
+// StepType is where a Record Workflow Action may be configured.
 type StepType string
 
 const (
@@ -20,7 +18,7 @@ const (
 	StepTask  StepType = "TASK"
 )
 
-// Event is the workflow lifecycle hook that invokes Execute (Veeva WorkflowEvent).
+// Event is the workflow lifecycle hook that invokes Execute.
 type Event string
 
 const (
@@ -44,7 +42,7 @@ func StepTypeForEvent(ev Event) StepType {
 	}
 }
 
-// Meta declares component-level static metadata (Java @RecordWorkflowActionInfo).
+// Meta declares component-level static metadata for one Record Workflow Action.
 type Meta struct {
 	Name      string
 	Label     string

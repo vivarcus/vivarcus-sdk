@@ -12,11 +12,11 @@ type Job interface {
 }
 ```
 
-对标 Veeva Java SDK `com.veeva.vault.sdk.api.job.Job`。`completeWithSuccess` / `completeWithError` 由平台 job engine 根据 Process 结果写入，客户代码不实现。
+`completeWithSuccess` / `completeWithError` 由平台 job engine 根据 Process 结果写入，客户代码不实现。
 
 ### Meta()
 
-声明组件级静态元数据（对标 Java `@JobInfo`）：
+声明组件级静态元数据：
 
 | 字段 | 必填 | 说明 |
 |------|------|------|
@@ -45,6 +45,6 @@ ctx.ParamStrings("record_ids")
 
 ## 组件命名
 
-FQN 由 module 路径 + 类型名派生，例如 `acme.corp.jobprocessor.StampRecords`。编号示例放在 `jobs/`（`package jobs`），见 [07-job-processor](../examples/07-job-processor/jobs/stamp_records.go)。也可以放在模块根或 `entries/`，**不要**放在 `shared/`。
+FQN 由 module 路径 + 类型名派生，例如 `acme.corp.sdkdemo.StampRecords`。编号示例放在 `jobs/`（`package jobs`），见 [07-job-processor](../examples/07-job-processor/jobs/stamp_records.go)。也可以放在模块根或 `entries/`，**不要**放在 `shared/`。
 
 调度：先部署 Sdkjob，再在 Admin > Operations 创建 SDK Job Metadata（`job_code` 填该 FQN）与类型为 **SDK Job** 的 Job Definition。

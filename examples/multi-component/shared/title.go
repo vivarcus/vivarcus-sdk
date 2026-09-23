@@ -2,10 +2,10 @@
 // Not a schedulable entry — Record Action / Trigger import it at compile time.
 package shared
 
-// Demo title written by SetTitle / cleared by ClearTitle.
+// Demo title written by SetTitleShared / cleared by ClearTitle.
 const DemoTitleValue = "from-sdk"
 
-// EntryTitleValue is written by StampOnEnter (lifecycle entry_action).
+// EntryTitleValue is written by StampDemoOnEnter (lifecycle entry_action).
 const EntryTitleValue = "stamped-on-enter"
 
 // TitleField is the demo object field both actions mutate.

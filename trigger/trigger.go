@@ -1,6 +1,4 @@
 // Package trigger is the Vivarcus Record Trigger API for wasm guests (tinygo / wasip1 safe).
-//
-// Conceptually aligned with Veeva Vault Java SDK RecordTrigger.
 package trigger
 
 import (
@@ -11,7 +9,7 @@ import (
 	"github.com/vivarcus/vivarcus-sdk/wire"
 )
 
-// Event is a Record Trigger event (Java RecordEvent).
+// Event is a Record Trigger event.
 type Event string
 
 const (
@@ -32,7 +30,7 @@ const (
 	UnspecifiedSeg EventSegment = "UNSPECIFIED"
 )
 
-// Meta declares component-level static metadata (Java @RecordTriggerInfo).
+// Meta declares component-level static metadata for one Record Trigger.
 type Meta struct {
 	Name         string
 	Label        string

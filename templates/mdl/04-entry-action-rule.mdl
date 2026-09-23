@@ -1,5 +1,5 @@
 -- 片段：entry_action rule 里引用 Recordaction.<FQN>。
--- 将 {{ACTION_FQN}} 换成 go.mod module + Go 类型名派生的 Recordaction FQN（如 acme.corp.lifecycle.StampOnEnter）。
+-- 将 {{ACTION_FQN}} 换成 go.mod module + Go 类型名派生的 Recordaction FQN（如 acme.corp.sdkdemo.StampOnEnter）。
 -- 在 Vault 生命周期配置中，把下面 rule 挂到目标状态的 Entry Action 上
 -- （例如 demo_request_lc__c 进入 in_review__c 时触发）。
 --

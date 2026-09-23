@@ -15,7 +15,7 @@
 ```bash
 vivarcus component apply-mdl --confirm -f mdl/01-object.mdl
 vivarcus sdk put -f actions/stamp_on_enter.go --json
-export ACTION_FQN=acme.corp.lifecycle.StampOnEnter
+export ACTION_FQN=acme.corp.sdkdemo.StampOnEnter
 python3 ../_shared/scripts/render-mdl.py mdl/02-lifecycle.mdl /tmp/02-lifecycle.mdl
 vivarcus component apply-mdl --confirm -f /tmp/02-lifecycle.mdl
 ```

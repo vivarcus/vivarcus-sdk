@@ -14,7 +14,7 @@ type RecordAction interface {
 
 ### Meta()
 
-声明组件级静态元数据（对标 Java `@RecordActionInfo`）：
+声明组件级静态元数据：
 
 | 字段 | 必填 | 说明 |
 |------|------|------|
@@ -34,7 +34,7 @@ type RecordAction interface {
 
 核心业务逻辑。通过 `ctx.Records[0]` 访问目标记录；用 `rec.SetValue` 暂存字段变更，再调用 `platform.Update` 持久化。
 
-`platform.Get` / `platform.Update` 的对象与记录 ID **必须**是当前这条上下文记录；传入其他 ID 会失败（`record_action_host_call_failed`）。这与 Veeva Java `RecordService` 允许任意 ID 不同，见 [07-limits](07-limits.md)。
+`platform.Get` / `platform.Update` 的对象与记录 ID **必须**是当前这条上下文记录；传入其他 ID 会失败（`record_action_host_call_failed`）。见 [07-limits](07-limits.md)。
 
 返回 `error` 时事务回滚。
 

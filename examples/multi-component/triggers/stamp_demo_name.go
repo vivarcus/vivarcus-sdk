@@ -5,20 +5,21 @@ import (
 	"github.com/vivarcus/vivarcus-sdk/trigger"
 )
 
-// StampName runs BEFORE_INSERT and stamps name__v.
-type StampName struct{}
+// StampDemoName runs BEFORE_INSERT and stamps name__v.
+// Distinct from examples/05-stamp-trigger StampName; both skip when the suffix is already present.
+type StampDemoName struct{}
 
-func (StampName) Meta() trigger.Meta {
+func (StampDemoName) Meta() trigger.Meta {
 	return trigger.Meta{
-		Label:        "Stamp Name",
+		Label:        "Stamp Demo Name",
 		Object:       "sdk_demo__c",
 		Events:       []trigger.Event{trigger.BeforeInsert},
 		EventSegment: trigger.PreCustom,
-		Order:        3,
+		Order:        4,
 	}
 }
 
-func (StampName) Execute(ctx trigger.RecordTriggerContext) error {
+func (StampDemoName) Execute(ctx trigger.RecordTriggerContext) error {
 	if len(ctx.RecordChanges) == 0 || ctx.RecordChanges[0].New == nil {
 		return nil
 	}

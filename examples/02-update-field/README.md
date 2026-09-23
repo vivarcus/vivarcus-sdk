@@ -2,25 +2,20 @@
 
 记录页 **All Actions** 按钮：通过 `SetValue` + `platform.Update` 写入 `title__c`。
 
-## Quick start
+## 部署
 
-```bash
-cd examples/02-update-field
-go test ./...
-vivarcus component apply-mdl --confirm -f mdl/01-object.mdl
-vivarcus sdk put -f actions/set_title.go --json
-```
+**前置**：Vault 地址、Vault ID、session（`auth login` 或 `examples/deploy.env`），见 [examples/README](../README.md)。目录：`cd examples/02-update-field`（monorepo：`cd sdk/examples/02-update-field`）。
 
-FQN：`acme.corp.updatefield.SetTitle`。对象 / 按钮名写在 [actions/set_title.go](actions/set_title.go) 的 `Meta()` 与 [`mdl/`](mdl/) 里。`go test` mock `platform.UpdateRecordFunc`，见 [actions/set_title_test.go](actions/set_title_test.go)。
+**一键**（推荐）：`./deploy.sh`
 
-本示例只走 `sdk put`。若 `github.com/acme.corp.updatefield` 以前用 VPK 装过根目录的 `SetTitle`，再 put `actions/set_title.go` 会因同一 module 里类型名重复而失败。见 [troubleshooting](../../docs/troubleshooting.md)。
+本地单测：`go test ./...`（mock `platform.UpdateRecordFunc`，见 [actions/set_title_test.go](actions/set_title_test.go)）。
 
-## 手工跟做
+`./deploy.sh` 会 apply 对象 MDL，再 `sdk put` `actions/set_title.go`。module 与其它示例相同，类型名 `SetTitle` 不与 `multi-component` 的 `SetTitleShared` 冲突。
 
-| 步骤 | 命令 |
-|------|------|
-| 创建对象 `sdk_demo__c` | `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl` |
-| 部署 `actions/set_title.go` | `vivarcus sdk put -f actions/set_title.go --json` |
-| 核对投影 | `vivarcus sdk get acme.corp.updatefield.SetTitle -o /tmp/SetTitle.go --json` |
+FQN：`acme.corp.sdkdemo.SetTitle`。对象 / 按钮名写在 [actions/set_title.go](actions/set_title.go) 的 `Meta()` 与 [`mdl/`](mdl/) 里。
+
+核对投影：`vivarcus sdk get acme.corp.sdkdemo.SetTitle -o /tmp/SetTitle.go --json`
 
 模块布局：[docs/03-build.md](../../docs/03-build.md)。
+
+集成测试（已登录 Vault）：`go test -tags=integration -count=1 -timeout 20m .`

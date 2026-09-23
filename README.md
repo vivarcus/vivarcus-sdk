@@ -1,8 +1,6 @@
 # Vivarcus SDK
 
-在 Vivarcus Vault 上开发 **Record Action**（记录页自定义按钮）、**Record Trigger**、**Job Processor**、**Custom Web API** 与 **Record Workflow Action** 的 Go 开发套件。编号示例用 **`vivarcus sdk put`** 部署单个 `.go`；多文件树用 **Inbound VPK**（仅 [multi-component](examples/multi-component)）。**Vault 编译源码**。
-
-> 对标 Veeva Vault Java SDK 的 `RecordAction` / `RecordTrigger` / `Job` / `WebApi` / `RecordWorkflowAction`；使用 **Go**，`javasdk/` 暂不支持。
+在 Vivarcus Vault 上开发 **Record Action**（记录页自定义按钮）、**Record Trigger**、**Job Processor**、**Custom Web API** 与 **Record Workflow Action** 的 **Go** 开发套件。编号示例用 **`vivarcus sdk put`** 部署单个 `.go`；多文件树用 **Inbound VPK**（仅 [multi-component](examples/multi-component)）。**Vault 编译源码**。
 
 本仓库是 guest API、模板与示例。扫描 / codegen / tinygo 在 Vault 镜像里，不随本模块发布。
 
@@ -24,14 +22,16 @@ cd vivarcus-sdk
 
 ### 2. 最小部署：单文件 `sdk put`
 
-从 **[examples/01-hello-action](examples/01-hello-action)** 开始：
+从 **[examples/01-hello-action](examples/01-hello-action)** 开始。先连接 Vault（地址、Vault ID；账号密码仅用于 `vivarcus auth login`，见 [examples/README — 连接 Vault](examples/README.md)）：
 
 ```bash
+vivarcus auth login --endpoint https://<你的租户>.vivarcus.com
+vivarcus config set default_vault <vault_id>
 cd examples/01-hello-action
-vivarcus sdk put -f actions/noop_action.go --json
+./deploy.sh
 ```
 
-有对象的编号示例先 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，再 `sdk put`。完整对照表见 [examples/README.md](examples/README.md)。
+有对象的编号示例先 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，再 `sdk put`。**每个示例怎么部署**（前置、目录、`sdk put` vs VPK、速查表）见 [examples/README.md — 部署入门](examples/README.md#部署入门)。
 
 ### 3. 多文件：combo VPK（仅 multi-component）
 

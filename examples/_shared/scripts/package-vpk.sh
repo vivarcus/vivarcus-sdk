@@ -12,15 +12,18 @@
 #   --component <step>:<Type>:<name>:<mdl-file>
 #   --name <vaultpackage name>
 #   --summary <vaultpackage summary>
+#   --replace   gosdk deployment_option=replace_all (drop other files on the vault tree)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 PKG_NAME="${PKG_NAME:-Demo SDK Action}"
 PKG_SUMMARY="${PKG_SUMMARY:-Customer Record Action (gosdk + optional MDL)}"
+DEPLOY_OPTION="incremental"
 COMPONENTS=()
+POSITIONAL=()
 
-while [ $# -gt 0 ] && [[ "$1" == --* ]]; do
+while [ $# -gt 0 ]; do
   case "$1" in
     --component)
       COMPONENTS+=("${2:?--component requires step:Type:name:file}")
@@ -34,19 +37,32 @@ while [ $# -gt 0 ] && [[ "$1" == --* ]]; do
       PKG_SUMMARY="$2"
       shift 2
       ;;
+    --replace)
+      DEPLOY_OPTION="replace_all"
+      shift
+      ;;
     -h|--help)
-      sed -n '1,16p' "$0"
+      sed -n '1,20p' "$0"
       exit 0
       ;;
-    *)
+    --)
+      shift
+      POSITIONAL+=("$@")
+      break
+      ;;
+    --*)
       echo "unknown option: $1" >&2
       exit 2
+      ;;
+    *)
+      POSITIONAL+=("$1")
+      shift
       ;;
   esac
 done
 
-MODULE_DIR="${1:?module dir required}"
-OUT="${2:-}"
+MODULE_DIR="${POSITIONAL[0]:?module dir required}"
+OUT="${POSITIONAL[1]:-}"
 
 if [ ! -d "$MODULE_DIR" ]; then
   echo "module dir not found: $MODULE_DIR" >&2
@@ -149,7 +165,7 @@ cat > "$DIST/vaultpackage.xml" <<EOF
   <summary>${PKG_SUMMARY}</summary>
   <packagetype>migration__v</packagetype>
   <gosdk>
-    <deployment_option>incremental</deployment_option>
+    <deployment_option>${DEPLOY_OPTION}</deployment_option>
     <module>${MODULE_PATH_XML}</module>
   </gosdk>
 </VaultPackage>

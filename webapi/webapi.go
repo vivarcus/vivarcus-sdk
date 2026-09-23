@@ -1,6 +1,4 @@
 // Package webapi is the Vivarcus Custom Web API guest interface (tinygo / wasip1 safe).
-//
-// Conceptually aligned with Veeva Vault Java SDK com.veeva.vault.sdk.api.webapi.WebApi.
 package webapi
 
 import (
@@ -18,7 +16,7 @@ const (
 	StatusWarning = "WARNING"
 )
 
-// Meta declares component-level static metadata (Java @WebApiInfo + @ExecuteAs).
+// Meta declares component-level static metadata for one Custom Web API.
 type Meta struct {
 	Name           string
 	Label          string

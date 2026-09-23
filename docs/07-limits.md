@@ -28,7 +28,7 @@
 
 ## Phase 1 宿主能力
 
-客户 Record Action 跑在 **wasm 沙箱**里，不是 Veeva Java SDK 的 Vault Owner 服务账号。`platform.Get` / `platform.Update` 的 `object` 与 `recordID` **必须等于**当前 Action 上下文记录；传入其他 ID 返回 `record_action_host_call_failed`。改当前记录请用 `rec.SetValue` 或对上下文 ID 调用 `platform.Update`。
+客户 Record Action 跑在 **wasm 沙箱**里，默认以 `Meta.RunAs` 声明的执行身份运行，且 **不能**通过 `platform.Get` / `platform.Update` 访问上下文以外的记录。`object` 与 `recordID` **必须等于**当前 Action 上下文记录；传入其他 ID 返回 `record_action_host_call_failed`。改当前记录请用 `rec.SetValue` 或对上下文 ID 调用 `platform.Update`。
 
 | 能力 | 状态 |
 |------|------|
@@ -44,7 +44,7 @@
 ## 批量 Action
 
 - `UsageUserBulkAction` 不能与其他 Usage 混用
-- 批量执行：**逐条串行**，每条独立事务（与 Veeva 500 条一批不同）
+- 批量执行：**逐条串行**，每条独立事务
 
 ## 部署
 

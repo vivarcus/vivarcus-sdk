@@ -1,6 +1,4 @@
 // Package job is the Vivarcus Job Processor API for wasm guests (tinygo / wasip1 safe).
-//
-// Conceptually aligned with Veeva Vault Java SDK com.veeva.vault.sdk.api.job.Job.
 package job
 
 import (
@@ -10,7 +8,7 @@ import (
 	"github.com/vivarcus/vivarcus-sdk/wire"
 )
 
-// Meta declares component-level static metadata (Java @JobInfo).
+// Meta declares component-level static metadata for one Job Processor.
 type Meta struct {
 	// Name is the Sdkjob FQN. Empty → toolchain derives from module + type.
 	Name              string

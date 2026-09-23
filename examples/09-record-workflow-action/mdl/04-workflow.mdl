@@ -16,7 +16,7 @@ RECREATE Objectworkflow capture_participants_wf__c (
     <vwf:controls>
       <vwf:control name="approver__c" label="Approver" type="participant">
         <vwf:recordWorkflowActions>
-          <vwf:recordWorkflowAction reference="Recordworkflowaction.acme.corp.recordworkflowaction.CaptureParticipants" />
+          <vwf:recordWorkflowAction reference="Recordworkflowaction.acme.corp.sdkdemo.CaptureParticipants" />
         </vwf:recordWorkflowActions>
       </vwf:control>
     </vwf:controls>

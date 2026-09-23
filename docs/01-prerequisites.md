@@ -22,7 +22,7 @@ VPK 只上传 `.go`；wasm 由 Vault 镜像编译。本仓库（`github.com/viva
 
 ### go.mod 与平台版本（双 tag）
 
-平台发版使用 Veeva 风格 tag（`v26R3.3-13316`），Go modules 不能识别 `26R3.3` 这种 ADCV 字符串。公开仓在**同一 commit** 上会再打 Go 兼容 tag（如 `v1.26.3-3.13316`），供 `go.mod` / `go get` 使用。
+平台发版使用 ADCV 版本 tag（`v26R3.3-13316`），Go modules 不能识别 `26R3.3` 这种 ADCV 字符串。公开仓在**同一 commit** 上会再打 Go 兼容 tag（如 `v1.26.3-3.13316`），供 `go.mod` / `go get` 使用。
 
 | 用途 | tag 示例 |
 |------|----------|
