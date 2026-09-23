@@ -12,7 +12,7 @@ type StampDemoName struct{}
 func (StampDemoName) Meta() trigger.Meta {
 	return trigger.Meta{
 		Label:        "Stamp Demo Name",
-		Object:       "sdk_demo__c",
+		Object:       "multi_demo__c",
 		Events:       []trigger.Event{trigger.BeforeInsert},
 		EventSegment: trigger.PreCustom,
 		Order:        4,

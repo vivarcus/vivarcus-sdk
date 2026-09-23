@@ -1,10 +1,10 @@
-RECREATE Object sdk_demo__c (
-  label('SDK Demo'),
-  label_plural('SDK Demos'),
+RECREATE Object multi_demo__c (
+  label('Multi Demo'),
+  label_plural('Multi Demos'),
   active(true),
   in_menu(true),
   audit(false),
-  available_lifecycles('sdk_demo_lc__c'),
+  available_lifecycles('multi_demo_lc__c'),
   Field title__c (
     type('String'),
     label('Title'),

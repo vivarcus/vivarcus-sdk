@@ -24,8 +24,8 @@ demo-action.vpk (zip)
 ├── vaultpackage.xml
 ├── components/
 │   └── 00010/
-│       ├── Object.sdk_demo__c.mdl
-│       └── Object.sdk_demo__c.md5
+│       ├── Object.multi_demo__c.mdl
+│       └── Object.multi_demo__c.md5
 └── gosdk/
     ├── actions/...
     ├── triggers/...
@@ -64,7 +64,7 @@ demo-action.vpk (zip)
 
 ```bash
 ./_shared/scripts/package-vpk.sh \
-  --component 10:Object:sdk_demo__c:./rendered/01-object.mdl \
+  --component 10:Object:multi_demo__c:./rendered/01-object.mdl \
   ./my-action ./demo-action.vpk
 ```
 

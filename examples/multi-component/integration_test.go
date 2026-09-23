@@ -14,17 +14,18 @@ import (
 func TestMultiComponentIntegration(t *testing.T) {
 	env := itest.Open(t)
 	const (
-		object = "sdk_demo__c"
+		object = "multi_demo__c"
 		field  = "title__c"
 		fqn    = "acme.corp.sdkdemo.StampDemoOnEnter"
 	)
 	dir := t.TempDir()
 	env.RenderMDL(t, "mdl/02-lifecycle.mdl", filepath.Join(dir, "02-lifecycle.mdl"), []string{"ACTION_FQN=" + fqn})
 	env.ApplyMDL(t, filepath.Join(dir, "02-lifecycle.mdl"))
-	env.ApplyMDL(t, "mdl/03-bind-object-lifecycle.mdl")
 
 	objectMDL := filepath.Join(dir, "01-object.mdl")
 	env.RenderMDL(t, "mdl/01-object.mdl", objectMDL, nil)
+	env.ApplyMDL(t, objectMDL)
+	env.ApplyMDL(t, "mdl/03-bind-object-lifecycle.mdl")
 	vpk := filepath.Join(dir, "action.vpk")
 	pkg := exec.Command("bash", filepath.Join("..", "_shared", "scripts", "package-vpk.sh"), ".", vpk,
 		"--component", "10:Object:"+object+":"+objectMDL)

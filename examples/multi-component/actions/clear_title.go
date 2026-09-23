@@ -12,7 +12,7 @@ type ClearTitle struct{}
 func (ClearTitle) Meta() action.Meta {
 	return action.Meta{
 		Label:        "Clear Title",
-		Object:       "sdk_demo__c",
+		Object:       "multi_demo__c",
 		ObjectAction: "clear_title__c",
 		Usages:       []action.Usage{action.UsageUserAction},
 		RunAs:        action.RunAsSystemUser,

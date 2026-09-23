@@ -13,7 +13,7 @@ type SetTitleShared struct{}
 func (SetTitleShared) Meta() action.Meta {
 	return action.Meta{
 		Label:        "Set Title (shared)",
-		Object:       "sdk_demo__c",
+		Object:       "multi_demo__c",
 		ObjectAction: "set_title_shared__c",
 		Usages:       []action.Usage{action.UsageUserAction},
 		RunAs:        action.RunAsSystemUser,

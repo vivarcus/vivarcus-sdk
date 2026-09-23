@@ -13,7 +13,7 @@ type StampDemoOnEnter struct{}
 func (StampDemoOnEnter) Meta() action.Meta {
 	return action.Meta{
 		Label:  "Stamp Demo On Enter",
-		Object: "sdk_demo__c",
+		Object: "multi_demo__c",
 		Usages: []action.Usage{action.UsageLifecycleEntryAction},
 		RunAs:  action.RunAsSystemUser,
 	}

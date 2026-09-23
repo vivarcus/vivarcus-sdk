@@ -31,7 +31,7 @@ cd examples/01-hello-action
 ./deploy.sh
 ```
 
-有对象的编号示例：绿场先 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，再 `sdk put`；对象已在则只 `sdk put`。详见 [examples/README.md — 对象 MDL](examples/README.md#对象-mdl)。
+有对象的编号示例：先 `vivarcus component apply-mdl --confirm -f mdl/01-object.mdl`，再 `sdk put`。详见 [examples/README.md — 对象 MDL](examples/README.md#对象-mdl)。
 
 ### 3. 多文件：combo VPK（仅 multi-component）
 
@@ -40,7 +40,7 @@ cd examples/01-hello-action
 ```bash
 cd examples/multi-component
 bash ../_shared/scripts/package-vpk.sh . action.vpk \
-  --component 10:Object:sdk_demo__c:mdl/01-object.mdl
+  --component 10:Object:multi_demo__c:mdl/01-object.mdl
 # vivarcus package import → validate → deploy（见 docs/05-deploy.md）
 ```
 

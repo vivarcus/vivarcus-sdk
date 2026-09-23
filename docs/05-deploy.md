@@ -24,8 +24,6 @@ vivarcus component apply-mdl --confirm -f mdl/01-object.mdl
 vivarcus sdk put -f actions/set_title.go --json
 ```
 
-`sdk_demo__c` 已存在时不要再 apply 这条 `RECREATE`。见 [examples/README — 对象 MDL](../examples/README.md#对象-mdl)。
-
 在客户 module 目录内 `--path` / `--module` 从 `go.mod` 推断。文件不在树里时显式指定：
 
 ```bash

@@ -64,7 +64,7 @@ cd examples/<示例目录>    # monorepo: cd sdk/examples/<示例目录>
 
 ### 对象 MDL
 
-`sdk_demo__c` 的 `01-object.mdl` 是 `RECREATE`，且不含生命周期。只在空 Vault 或重置后的绿场上执行 `./deploy.sh`（以及集成测试里的 `apply-mdl`）。对象已经存在时——尤其跑过 [multi-component](multi-component) 并绑了 `sdk_demo_lc__c`——不要再 apply 这条 MDL，只 `vivarcus sdk put`。
+02、03、05、06、07 共用 `sdk_demo__c`。这几份 `01-object.mdl` 相同，且不含生命周期，`RECREATE` 可以重复执行。会绑定生命周期的示例各自使用独立对象，避免覆盖这条定义：04 用 `demo_request__c`，09 用 `capture_demo__c`，[multi-component](multi-component) 用 `multi_demo__c`。
 
 ### 5. 各示例部署速查
 

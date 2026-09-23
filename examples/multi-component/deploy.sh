@@ -12,12 +12,13 @@ export ACTION_FQN=acme.corp.sdkdemo.StampDemoOnEnter
 
 deploy_render_mdl mdl/02-lifecycle.mdl "$tmpdir/02-lifecycle.mdl" "ACTION_FQN=$ACTION_FQN"
 deploy_apply_mdl "$tmpdir/02-lifecycle.mdl"
+deploy_render_mdl mdl/01-object.mdl "$tmpdir/01-object.mdl"
+deploy_apply_mdl "$tmpdir/01-object.mdl"
 deploy_apply_mdl mdl/03-bind-object-lifecycle.mdl
 
-deploy_render_mdl mdl/01-object.mdl "$tmpdir/01-object.mdl"
 vpk="$tmpdir/action.vpk"
 bash "$SHARED_SCRIPTS/package-vpk.sh" . "$vpk" \
-  --component "10:Object:sdk_demo__c:$tmpdir/01-object.mdl"
+  --component "10:Object:multi_demo__c:$tmpdir/01-object.mdl"
 deploy_vpk "$vpk"
 
 echo "Done. Example FQNs: acme.corp.sdkdemo.SetTitleShared, ClearTitle, StampDemoOnEnter, StampDemoName"

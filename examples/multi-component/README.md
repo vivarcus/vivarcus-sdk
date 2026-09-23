@@ -42,7 +42,7 @@ Deploy 时平台从 `gosdk/` Go 源码编译并扫描组件清单，投影：
 
 ```bash
 bash ../_shared/scripts/package-vpk.sh . action.vpk \
-  --component 10:Object:sdk_demo__c:mdl/01-object.mdl
+  --component 10:Object:multi_demo__c:mdl/01-object.mdl
 vivarcus package import ./action.vpk
 # 记下 package_id
 vivarcus package validate <package_id> --json
@@ -58,7 +58,7 @@ vivarcus package deploy <package_id> --confirm --json
 
 ## 流程（端到端）
 
-1. 应用 lifecycle MDL（`02-lifecycle.mdl` 把 entry_action 绑到 `Recordaction.<FQN>`；须在 gosdk deploy **之后**，或与对象 MDL 分步 apply）
+1. 应用 lifecycle MDL，再 apply `01-object.mdl` 创建 `multi_demo__c` 并绑上 `multi_demo_lc__c`（`02-lifecycle.mdl` 把 entry_action 绑到 `Recordaction.<FQN>`；须在 gosdk deploy **之后**，或与对象 MDL 分步 apply）
 2. Combo VPK：对象 MDL + `gosdk/` 全部 `.go`（`package-vpk.sh`）
 3. `import` → `validate` → `deploy`（Vault 编译；投影 active Recordaction / Objectaction / Recordtrigger）
 4. 验证：
